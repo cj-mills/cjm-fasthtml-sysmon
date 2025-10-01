@@ -29,7 +29,8 @@ from ..core.html_ids import HtmlIds
 
 # %% ../../nbs/components/modals.ipynb 5
 def render_settings_modal(
-    refresh_intervals:dict  # Dictionary containing refresh interval values for each component
+    refresh_intervals:dict,  # Dictionary containing refresh interval values for each component
+    post_rt:str="/update_intervals" # Target route path
 )-> FT:  # A Dialog element containing the settings modal
     """Render the settings modal for configuring refresh intervals."""
     return Dialog(
@@ -203,7 +204,7 @@ def render_settings_modal(
                 Button(
                     "Apply",
                     cls=combine_classes(btn, btn_colors.primary),
-                    hx_post="/update_intervals",
+                    hx_post=post_rt,
                     hx_vals=f"js:{{cpu: document.getElementById('{HtmlIds.CPU_INTERVAL}').value, memory: document.getElementById('{HtmlIds.MEMORY_INTERVAL}').value, disk: document.getElementById('{HtmlIds.DISK_INTERVAL}').value, network: document.getElementById('{HtmlIds.NETWORK_INTERVAL}').value, process: document.getElementById('{HtmlIds.PROCESS_INTERVAL}').value, gpu: document.getElementById('{HtmlIds.GPU_INTERVAL}').value, temperature: document.getElementById('{HtmlIds.TEMPERATURE_INTERVAL}').value}}",
                     hx_swap="none"
                 ),

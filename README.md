@@ -53,25 +53,25 @@ graph LR
     monitors_sensors[monitors.sensors<br/>sensors]
     monitors_system[monitors.system<br/>system]
 
-    components_base --> monitors_processes
     components_base --> core_html_ids
-    components_cards --> components_base
-    components_cards --> monitors_sensors
-    components_cards --> monitors_disk
-    components_cards --> components_common
+    components_base --> monitors_processes
     components_cards --> core_utils
-    components_cards --> monitors_system
-    components_cards --> components_tables
-    components_cards --> monitors_memory
-    components_cards --> monitors_processes
-    components_cards --> monitors_cpu
     components_cards --> monitors_gpu
     components_cards --> core_html_ids
     components_cards --> monitors_network
+    components_cards --> monitors_sensors
+    components_cards --> components_tables
+    components_cards --> monitors_memory
+    components_cards --> components_base
+    components_cards --> monitors_cpu
+    components_cards --> monitors_processes
+    components_cards --> monitors_disk
+    components_cards --> monitors_system
+    components_cards --> components_common
     components_common --> core_utils
     components_modals --> core_html_ids
-    components_tables --> monitors_processes
     components_tables --> core_html_ids
+    components_tables --> monitors_processes
 ```
 
 *19 cross-module dependencies detected*
@@ -385,7 +385,8 @@ from cjm_fasthtml_sysmon.components.modals import (
 
 ``` python
 def render_settings_modal(
-    refresh_intervals:dict  # Dictionary containing refresh interval values for each component
+    refresh_intervals:dict,  # Dictionary containing refresh interval values for each component
+    post_rt:str="/update_intervals" # Target route path
 )-> FT:  # A Dialog element containing the settings modal
     "Render the settings modal for configuring refresh intervals."
 ```
