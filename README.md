@@ -55,19 +55,19 @@ graph LR
 
     components_base --> monitors_processes
     components_base --> core_html_ids
-    components_cards --> monitors_system
-    components_cards --> monitors_network
-    components_cards --> components_base
-    components_cards --> monitors_memory
     components_cards --> monitors_cpu
+    components_cards --> components_base
     components_cards --> components_tables
+    components_cards --> core_html_ids
+    components_cards --> monitors_system
+    components_cards --> monitors_processes
+    components_cards --> monitors_sensors
+    components_cards --> monitors_memory
     components_cards --> core_utils
     components_cards --> components_common
-    components_cards --> monitors_sensors
+    components_cards --> monitors_network
     components_cards --> monitors_disk
-    components_cards --> core_html_ids
     components_cards --> monitors_gpu
-    components_cards --> monitors_processes
     components_common --> core_utils
     components_modals --> core_html_ids
     components_tables --> monitors_processes
@@ -127,10 +127,16 @@ from cjm_fasthtml_sysmon.components.cards import (
     render_os_info_card,
     render_cpu_card,
     render_memory_card,
+    render_disk_entries,
     render_disk_card,
+    render_network_interfaces,
+    render_network_connections,
     render_network_card,
     render_process_card,
+    render_gpu_metrics,
+    render_gpu_processes_section,
     render_gpu_card,
+    render_temperature_sensors,
     render_temperature_card
 )
 ```
@@ -181,17 +187,38 @@ def render_memory_card(
 ```
 
 ``` python
+def render_disk_entries(
+    disk_info:list  # List of dictionaries containing disk information
+)-> FT:  # A Div element containing disk entries
+    "Render just the disk entries section."
+```
+
+``` python
 def render_disk_card(
     disk_info:list  # List of dictionaries containing disk usage information
 )-> FT:  # A Div element containing the disk usage card
-    "Render the disk usage card."
+    "Render the disk usage card using helper functions."
+```
+
+``` python
+def render_network_interfaces(
+    net_info:dict  # Dictionary containing network information
+)-> FT:  # A Div element containing network interfaces
+    "Render just the network interfaces section."
+```
+
+``` python
+def render_network_connections(
+    net_info:dict  # Dictionary containing network information
+)-> FT:  # A Div element containing connection statistics
+    "Render just the network connections section."
 ```
 
 ``` python
 def render_network_card(
     net_info:dict  # Dictionary containing network interface and connection information
 )-> FT:  # A Div element containing the network monitoring card
-    "Render the network monitoring card."
+    "Render the network monitoring card using helper functions."
 ```
 
 ``` python
@@ -202,17 +229,38 @@ def render_process_card(
 ```
 
 ``` python
+def render_gpu_metrics(
+    gpu_info:dict  # Dictionary containing GPU information
+)-> FT:  # A Div element containing GPU metrics section
+    "Render just the GPU metrics section (utilization, memory, temp, power)."
+```
+
+``` python
+def render_gpu_processes_section(
+    gpu_info:dict  # Dictionary containing GPU information
+)-> FT:  # A Div element containing GPU processes section
+    "Render just the GPU processes section."
+```
+
+``` python
 def render_gpu_card(
     gpu_info:dict  # Dictionary containing GPU information and statistics
 )-> FT:  # A Div element containing the GPU information card
-    "Render the GPU information card."
+    "Render the GPU information card using helper functions."
+```
+
+``` python
+def render_temperature_sensors(
+    temp_info:list  # List of dictionaries containing temperature information
+)-> FT:  # A Div element containing temperature sensors
+    "Render just the temperature sensors section."
 ```
 
 ``` python
 def render_temperature_card(
     temp_info:list  # List of dictionaries containing temperature sensor information
 )-> FT:  # A Div element containing the temperature sensors card
-    "Render the temperature sensors card."
+    "Render the temperature sensors card using helper functions."
 ```
 
 ### common (`common.ipynb`)

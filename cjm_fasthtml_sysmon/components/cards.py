@@ -4,8 +4,9 @@
 
 # %% auto 0
 __all__ = ['get_cpu_text_color', 'render_cpu_cores_grid', 'render_os_info_card', 'render_cpu_card', 'render_memory_card',
-           'render_disk_card', 'render_network_card', 'render_process_card', 'render_gpu_card',
-           'render_temperature_card']
+           'render_disk_entries', 'render_disk_card', 'render_network_interfaces', 'render_network_connections',
+           'render_network_card', 'render_process_card', 'render_gpu_metrics', 'render_gpu_processes_section',
+           'render_gpu_card', 'render_temperature_sensors', 'render_temperature_card']
 
 # %% ../../nbs/components/cards.ipynb 3
 from fasthtml.common import *
@@ -244,46 +245,137 @@ def render_memory_card(
     )
 
 # %% ../../nbs/components/cards.ipynb 15
+def render_disk_entries(
+    disk_info:list  # List of dictionaries containing disk information
+)-> FT:  # A Div element containing disk entries
+    """Render just the disk entries section."""
+    return Div(
+        *[Div(
+            Div(
+                P(disk['device'], cls=combine_classes(font_size.sm, font_weight.medium)),
+                P(f"{disk['mountpoint']} ({disk['fstype']})",
+                  cls=combine_classes(font_size.xs, text_dui.base_content)),
+                cls=str(m.b(2))
+            ),
+            render_progress_bar(disk['percent'],
+                              label=f"{format_bytes(disk['used'])} / {format_bytes(disk['total'])}"),
+            P(f"Free: {format_bytes(disk['free'])}",
+              cls=combine_classes(font_size.xs, text_dui.base_content, m.t(1))),
+            cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
+        ) for disk in disk_info[:5]],
+        cls="",
+        id=HtmlIds.DISK_ENTRIES
+    )
+
+# %% ../../nbs/components/cards.ipynb 16
 def render_disk_card(
     disk_info:list  # List of dictionaries containing disk usage information
 )-> FT:  # A Div element containing the disk usage card
-    """Render the disk usage card."""
+    """Render the disk usage card using helper functions."""
     return Div(
         Div(
             H3("Disk Usage", cls=combine_classes(card_title, text_dui.base_content)),
             cls=str(m.b(4))
         ),
 
-        # Disk entries - can be updated independently
-        Div(
-            *[Div(
-                Div(
-                    P(disk['device'], cls=combine_classes(font_size.sm, font_weight.medium)),
-                    P(f"{disk['mountpoint']} ({disk['fstype']})",
-                      cls=combine_classes(font_size.xs, text_dui.base_content)),
-                    cls=str(m.b(2))
-                ),
-                render_progress_bar(disk['percent'],
-                                  label=f"{format_bytes(disk['used'])} / {format_bytes(disk['total'])}"),
-                P(f"Free: {format_bytes(disk['free'])}",
-                  cls=combine_classes(font_size.xs, text_dui.base_content, m.t(1))),
-                cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
-            ) for disk in disk_info[:5]],  # Limit to 5 disks for UI clarity
-            cls="",
-            id=HtmlIds.DISK_ENTRIES  # NEW - ID for disk entries section
-        ),
+        # Disk entries - render using helper
+        render_disk_entries(disk_info),
 
         cls=str(card_body),
         id=HtmlIds.DISK_CARD_BODY
     )
 
-# %% ../../nbs/components/cards.ipynb 17
+# %% ../../nbs/components/cards.ipynb 18
+def render_network_interfaces(
+    net_info:dict  # Dictionary containing network information
+)-> FT:  # A Div element containing network interfaces
+    """Render just the network interfaces section."""
+    interfaces = net_info['interfaces']
+
+    return Div(
+        *[Div(
+            # Interface header
+            Div(
+                P(interface['name'], cls=combine_classes(font_size.sm, font_weight.medium)),
+                P(', '.join(interface['ip_addresses']) if interface['ip_addresses'] else 'No IP',
+                  cls=combine_classes(font_size.xs, text_dui.base_content)),
+                cls=str(m.b(2))
+            ),
+
+            # Bandwidth meters
+            Div(
+                # Upload speed
+                Label(
+                    Label(
+                        Span("↑ Upload", cls=combine_classes(font_size.xs, text_dui.base_content)),
+                        Span(format_bandwidth(interface['bytes_sent_per_sec']),
+                             cls=combine_classes(font_size.xs, text_dui.info, font_weight.medium)),
+                        cls=combine_classes(flex_display, justify.between)
+                    ),
+                    Progress(
+                        value=str(min(100, interface['bytes_sent_per_sec'] / 1024 / 1024 * 10)),
+                        max="100",
+                        cls=combine_classes(progress, progress_colors.info, w.full, h(1))
+                    ),
+                    cls=str(m.b(2))
+                ),
+
+                # Download speed
+                Label(
+                    Label(
+                        Span("↓ Download", cls=combine_classes(font_size.xs, text_dui.base_content)),
+                        Span(format_bandwidth(interface['bytes_recv_per_sec']),
+                             cls=combine_classes(font_size.xs, text_dui.success, font_weight.medium)),
+                        cls=combine_classes(flex_display, justify.between)
+                    ),
+                    Progress(
+                        value=str(min(100, interface['bytes_recv_per_sec'] / 1024 / 1024 * 10)),
+                        max="100",
+                        cls=combine_classes(progress, progress_colors.success, w.full, h(1))
+                    ),
+                    cls=str(m.b(2))
+                ),
+
+                # Statistics
+                Label(
+                    Span(f"Total: ↑{format_bytes(interface['bytes_sent'])} ↓{format_bytes(interface['bytes_recv'])}",
+                         cls=combine_classes(font_size.xs, text_dui.base_content)),
+                    cls=str(m.t(1))
+                ),
+            ),
+
+            cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
+        ) for interface in interfaces[:3]],
+        cls="",
+        id=HtmlIds.NETWORK_INTERFACES
+    )
+
+# %% ../../nbs/components/cards.ipynb 19
+def render_network_connections(
+    net_info:dict  # Dictionary containing network information
+)-> FT:  # A Div element containing connection statistics
+    """Render just the network connections section."""
+    connections = net_info['connections']
+
+    return Div(
+        P("Connections", cls=combine_classes(font_size.sm, font_weight.medium, m.b(2))),
+        Div(
+            render_stat_card("Total", str(connections['total'])),
+            render_stat_card("Established", str(connections['established'])),
+            render_stat_card("Listening", str(connections['listen'])),
+            render_stat_card("Time Wait", str(connections['time_wait'])),
+            cls=combine_classes(stats, bg_dui.base_200, rounded.lg, p(2), font_size.xs, overflow.x.auto, w.full)
+        ),
+        cls=str(m.t(3)),
+        id=HtmlIds.NETWORK_CONNECTIONS
+    )
+
+# %% ../../nbs/components/cards.ipynb 20
 def render_network_card(
     net_info:dict  # Dictionary containing network interface and connection information
 )-> FT:  # A Div element containing the network monitoring card
-    """Render the network monitoring card."""
+    """Render the network monitoring card using helper functions."""
     interfaces = net_info['interfaces']
-    connections = net_info['connections']
 
     if not interfaces:
         return Div(
@@ -308,84 +400,17 @@ def render_network_card(
             cls=combine_classes(flex_display, justify.between, items.center, m.b(4))
         ),
 
-        # Network interfaces - can be updated independently
-        Div(
-            *[Div(
-                # Interface header
-                Div(
-                    P(interface['name'], cls=combine_classes(font_size.sm, font_weight.medium)),
-                    P(', '.join(interface['ip_addresses']) if interface['ip_addresses'] else 'No IP',
-                      cls=combine_classes(font_size.xs, text_dui.base_content)),
-                    cls=str(m.b(2))
-                ),
+        # Network interfaces - render using helper
+        render_network_interfaces(net_info),
 
-                # Bandwidth meters
-                Div(
-                    # Upload speed
-                    Label(
-                        Label(
-                            Span("↑ Upload", cls=combine_classes(font_size.xs, text_dui.base_content)),
-                            Span(format_bandwidth(interface['bytes_sent_per_sec']),
-                                 cls=combine_classes(font_size.xs, text_dui.info, font_weight.medium)),
-                            cls=combine_classes(flex_display, justify.between)
-                        ),
-                        Progress(
-                            value=str(min(100, interface['bytes_sent_per_sec'] / 1024 / 1024 * 10)),  # Scale to MB/s
-                            max="100",
-                            cls=combine_classes(progress, progress_colors.info, w.full, h(1))
-                        ),
-                        cls=str(m.b(2))
-                    ),
-
-                    # Download speed
-                    Label(
-                        Label(
-                            Span("↓ Download", cls=combine_classes(font_size.xs, text_dui.base_content)),
-                            Span(format_bandwidth(interface['bytes_recv_per_sec']),
-                                 cls=combine_classes(font_size.xs, text_dui.success, font_weight.medium)),
-                            cls=combine_classes(flex_display, justify.between)
-                        ),
-                        Progress(
-                            value=str(min(100, interface['bytes_recv_per_sec'] / 1024 / 1024 * 10)),  # Scale to MB/s
-                            max="100",
-                            cls=combine_classes(progress, progress_colors.success, w.full, h(1))
-                        ),
-                        cls=str(m.b(2))
-                    ),
-
-                    # Statistics
-                    Label(
-                        Span(f"Total: ↑{format_bytes(interface['bytes_sent'])} ↓{format_bytes(interface['bytes_recv'])}",
-                             cls=combine_classes(font_size.xs, text_dui.base_content)),
-                        cls=str(m.t(1))
-                    ),
-                ),
-
-                cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
-            ) for interface in interfaces[:3]],  # Limit to 3 interfaces for UI clarity
-            cls="",
-            id=HtmlIds.NETWORK_INTERFACES  # NEW - ID for interfaces section
-        ),
-
-        # Connection statistics - can be updated independently
-        Div(
-            P("Connections", cls=combine_classes(font_size.sm, font_weight.medium, m.b(2))),
-            Div(
-                render_stat_card("Total", str(connections['total'])),
-                render_stat_card("Established", str(connections['established'])),
-                render_stat_card("Listening", str(connections['listen'])),
-                render_stat_card("Time Wait", str(connections['time_wait'])),
-                cls=combine_classes(stats, bg_dui.base_200, rounded.lg, p(2), font_size.xs, overflow.x.auto, w.full)
-            ),
-            cls=str(m.t(3)),
-            id=HtmlIds.NETWORK_CONNECTIONS  # NEW - ID for connections section
-        ),
+        # Connection statistics - render using helper
+        render_network_connections(net_info),
 
         cls=str(card_body),
         id=HtmlIds.NETWORK_CARD_BODY
     )
 
-# %% ../../nbs/components/cards.ipynb 19
+# %% ../../nbs/components/cards.ipynb 22
 def render_process_card(
     proc_info:dict  # Dictionary containing process information and statistics
 )-> FT:  # A Div element containing the process monitoring card
@@ -439,11 +464,184 @@ def render_process_card(
         id=HtmlIds.PROCESS_CARD_BODY
     )
 
-# %% ../../nbs/components/cards.ipynb 21
+# %% ../../nbs/components/cards.ipynb 24
+def render_gpu_metrics(
+    gpu_info:dict  # Dictionary containing GPU information
+)-> FT:  # A Div element containing GPU metrics section
+    """Render just the GPU metrics section (utilization, memory, temp, power)."""
+    if not gpu_info['available']:
+        return None
+
+    return Div(
+        *[Div(
+            P(details['name'], cls=combine_classes(font_size.sm, font_weight.medium, m.b(2))),
+
+            # Main metrics in grid
+            Div(
+                # GPU Utilization
+                Label(
+                    P("GPU Utilization", cls=combine_classes(font_size.xs, text_dui.base_content)),
+                    render_progress_bar(details['utilization']),
+                    cls=str(m.b(3))
+                ),
+
+                # GPU Memory
+                Label(
+                    P("Memory", cls=combine_classes(font_size.xs, text_dui.base_content)),
+                    render_progress_bar(
+                        (details['memory_used'] / details['memory_total']) * 100 if details['memory_total'] > 0 else 0,
+                        label=f"{details['memory_used']} MB / {details['memory_total']} MB"
+                    ),
+                    cls=str(m.b(3))
+                ),
+
+                # Temperature (if available)
+                Label(
+                    P("Temperature", cls=combine_classes(font_size.xs, text_dui.base_content)),
+                    Label(
+                        Span(
+                            f"{details.get('temperature', 'N/A')}°C" if details.get('temperature') else "N/A",
+                            cls=combine_classes(
+                                font_weight.medium,
+                                get_temperature_color(details.get('temperature', 0), 80, 90) if details.get('temperature') else text_dui.base_content
+                            )
+                        ),
+                        cls=str(m.t(1))
+                    ),
+                    cls=str(m.b(3))
+                ) if details.get('temperature') is not None else None,
+
+                # Power Usage (if available)
+                Label(
+                    P("Power", cls=combine_classes(font_size.xs, text_dui.base_content)),
+                    Label(
+                        Span(
+                            f"{details.get('power_usage', 0):.1f}W / {details.get('power_limit', 0):.1f}W"
+                            if details.get('power_usage') is not None else "N/A",
+                            cls=combine_classes(font_size.sm, text_dui.base_content)
+                        ),
+                        render_progress_bar(
+                            (details.get('power_usage', 0) / details.get('power_limit', 1)) * 100
+                            if details.get('power_limit') and details.get('power_limit') > 0 else 0,
+                            label=None
+                        ) if details.get('power_usage') is not None and details.get('power_limit') else None,
+                        cls=""
+                    ),
+                    cls=str(m.b(3))
+                ) if details.get('power_usage') is not None else None,
+
+                # Additional metrics in a row
+                Label(
+                    # Fan Speed
+                    Span(
+                        f"Fan: {details.get('fan_speed', 'N/A')}%" if details.get('fan_speed') is not None else "",
+                        cls=combine_classes(font_size.xs, text_dui.base_content)
+                    ) if details.get('fan_speed') is not None else None,
+
+                    # Encoder/Decoder utilization
+                    Span(
+                        f"Enc: {details.get('encoder_utilization', 0)}%",
+                        cls=combine_classes(font_size.xs, text_dui.base_content, m.l(3))
+                    ) if details.get('encoder_utilization') is not None else None,
+
+                    Span(
+                        f"Dec: {details.get('decoder_utilization', 0)}%",
+                        cls=combine_classes(font_size.xs, text_dui.base_content, m.l(3))
+                    ) if details.get('decoder_utilization') is not None else None,
+
+                    # Process count
+                    Span(
+                        f"Processes: {details.get('compute_processes', 0)}",
+                        cls=combine_classes(font_size.xs, text_dui.base_content, m.l(3))
+                    ) if details.get('compute_processes') is not None else None,
+
+                    cls=combine_classes(flex_display, items.center)
+                ) if any([details.get('fan_speed'), details.get('encoder_utilization'),
+                         details.get('decoder_utilization'), details.get('compute_processes')]) else None,
+
+                cls=""
+            ),
+
+            cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
+        ) for gpu_id, details in gpu_info['details'].items()],
+        cls="",
+        id=HtmlIds.GPU_METRICS
+    )
+
+# %% ../../nbs/components/cards.ipynb 25
+def render_gpu_processes_section(
+    gpu_info:dict  # Dictionary containing GPU information
+)-> FT:  # A Div element containing GPU processes section
+    """Render just the GPU processes section."""
+    if not gpu_info['available'] or gpu_info.get('processes') is None:
+        return None
+
+    return Div(
+        Div(cls=combine_classes(divider, m.y(3))),
+        P("GPU Processes", cls=combine_classes(font_size.sm, font_weight.semibold, m.b(3), text_dui.base_content)),
+
+        # Process table
+        Div(
+            Table(
+                Thead(
+                    Tr(
+                        Th("PID", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
+                        Th("Process", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
+                        Th("GPU Memory", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
+                        Th("GPU Usage", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
+                        Th("Device", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
+                    )
+                ),
+                Tbody(
+                    *[Tr(
+                        Td(str(proc['pid']), cls=combine_classes(font_size.xs, text_dui.base_content)),
+                        Td(
+                            proc['name'],
+                            cls=combine_classes(font_size.xs, font_weight.medium)
+                        ),
+                        Td(
+                            Span(
+                                f"{proc['gpu_memory_mb']} MB",
+                                cls=combine_classes(
+                                    badge,
+                                    badge_colors.primary if proc['gpu_memory_mb'] < 4096 else badge_colors.warning if proc['gpu_memory_mb'] < 8192 else badge_colors.error,
+                                    badge_sizes.xs
+                                )
+                            ),
+                            cls=""
+                        ),
+                        Td(
+                            f"{proc.get('gpu_utilization', 0)}%",
+                            cls=combine_classes(
+                                font_size.xs,
+                                text_dui.success if proc.get('gpu_utilization', 0) < 50 else text_dui.warning if proc.get('gpu_utilization', 0) < 80 else text_dui.error
+                            )
+                        ),
+                        Td(
+                            f"GPU {proc['device_id']}",
+                            cls=combine_classes(font_size.xs, text_dui.base_content)
+                        ),
+                    ) for proc in sorted(gpu_info.get('processes', []), key=lambda x: x['gpu_memory_mb'], reverse=True)[:10]],
+                    cls=""
+                ),
+                cls=combine_classes(table, table_sizes.xs, w.full)
+            ),
+            cls=combine_classes(overflow.x.auto, bg_dui.base_200, rounded.lg, p(2)),
+            id=HtmlIds.GPU_PROCESSES_TABLE
+        ) if gpu_info.get('processes') else Div(
+            P("No active GPU processes", cls=combine_classes(font_size.sm, text_dui.base_content, text_align.center, p(4))),
+            cls=combine_classes(bg_dui.base_200, rounded.lg),
+            id=HtmlIds.GPU_PROCESSES_TABLE
+        ),
+        cls="",
+        id=HtmlIds.GPU_PROCESSES_SECTION
+    )
+
+# %% ../../nbs/components/cards.ipynb 26
 def render_gpu_card(
     gpu_info:dict  # Dictionary containing GPU information and statistics
 )-> FT:  # A Div element containing the GPU information card
-    """Render the GPU information card."""
+    """Render the GPU information card using helper functions."""
     if not gpu_info['available']:
         return Div(
             Div(
@@ -467,174 +665,71 @@ def render_gpu_card(
             cls=combine_classes(flex_display, justify.between, items.center, m.b(4))
         ),
 
-        # GPU Metrics Section - can be updated independently
-        Div(
-            *[Div(
-                P(details['name'], cls=combine_classes(font_size.sm, font_weight.medium, m.b(2))),
+        # GPU Metrics Section - render using helper
+        render_gpu_metrics(gpu_info),
 
-                # Main metrics in grid
-                Div(
-                    # GPU Utilization
-                    Label(
-                        P("GPU Utilization", cls=combine_classes(font_size.xs, text_dui.base_content)),
-                        render_progress_bar(details['utilization']),
-                        cls=str(m.b(3))
-                    ),
-
-                    # GPU Memory
-                    Label(
-                        P("Memory", cls=combine_classes(font_size.xs, text_dui.base_content)),
-                        render_progress_bar(
-                            (details['memory_used'] / details['memory_total']) * 100 if details['memory_total'] > 0 else 0,
-                            label=f"{details['memory_used']} MB / {details['memory_total']} MB"
-                        ),
-                        cls=str(m.b(3))
-                    ),
-
-                    # Temperature (if available)
-                    Label(
-                        P("Temperature", cls=combine_classes(font_size.xs, text_dui.base_content)),
-                        Label(
-                            Span(
-                                f"{details.get('temperature', 'N/A')}°C" if details.get('temperature') else "N/A",
-                                cls=combine_classes(
-                                    font_weight.medium,
-                                    get_temperature_color(details.get('temperature', 0), 80, 90) if details.get('temperature') else text_dui.base_content
-                                )
-                            ),
-                            cls=str(m.t(1))
-                        ),
-                        cls=str(m.b(3))
-                    ) if details.get('temperature') is not None else None,
-
-                    # Power Usage (if available)
-                    Label(
-                        P("Power", cls=combine_classes(font_size.xs, text_dui.base_content)),
-                        Label(
-                            Span(
-                                f"{details.get('power_usage', 0):.1f}W / {details.get('power_limit', 0):.1f}W"
-                                if details.get('power_usage') is not None else "N/A",
-                                cls=combine_classes(font_size.sm, text_dui.base_content)
-                            ),
-                            render_progress_bar(
-                                (details.get('power_usage', 0) / details.get('power_limit', 1)) * 100
-                                if details.get('power_limit') and details.get('power_limit') > 0 else 0,
-                                label=None
-                            ) if details.get('power_usage') is not None and details.get('power_limit') else None,
-                            cls=""
-                        ),
-                        cls=str(m.b(3))
-                    ) if details.get('power_usage') is not None else None,
-
-                    # Additional metrics in a row
-                    Label(
-                        # Fan Speed
-                        Span(
-                            f"Fan: {details.get('fan_speed', 'N/A')}%" if details.get('fan_speed') is not None else "",
-                            cls=combine_classes(font_size.xs, text_dui.base_content)
-                        ) if details.get('fan_speed') is not None else None,
-
-                        # Encoder/Decoder utilization
-                        Span(
-                            f"Enc: {details.get('encoder_utilization', 0)}%",
-                            cls=combine_classes(font_size.xs, text_dui.base_content, m.l(3))
-                        ) if details.get('encoder_utilization') is not None else None,
-
-                        Span(
-                            f"Dec: {details.get('decoder_utilization', 0)}%",
-                            cls=combine_classes(font_size.xs, text_dui.base_content, m.l(3))
-                        ) if details.get('decoder_utilization') is not None else None,
-
-                        # Process count
-                        Span(
-                            f"Processes: {details.get('compute_processes', 0)}",
-                            cls=combine_classes(font_size.xs, text_dui.base_content, m.l(3))
-                        ) if details.get('compute_processes') is not None else None,
-
-                        cls=combine_classes(flex_display, items.center)
-                    ) if any([details.get('fan_speed'), details.get('encoder_utilization'),
-                             details.get('decoder_utilization'), details.get('compute_processes')]) else None,
-
-                    cls=""
-                ),
-
-                cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
-            ) for gpu_id, details in gpu_info['details'].items()],
-            cls="",
-            id=HtmlIds.GPU_METRICS  # NEW - ID for metrics section
-        ),
-
-        # GPU Processes section (if any) - can be updated independently
-        Div(
-            Div(cls=combine_classes(divider, m.y(3))),
-            P("GPU Processes", cls=combine_classes(font_size.sm, font_weight.semibold, m.b(3), text_dui.base_content)),
-
-            # Process table
-            Div(
-                Table(
-                    Thead(
-                        Tr(
-                            Th("PID", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
-                            Th("Process", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
-                            Th("GPU Memory", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
-                            Th("GPU Usage", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
-                            Th("Device", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
-                        )
-                    ),
-                    Tbody(
-                        *[Tr(
-                            Td(str(proc['pid']), cls=combine_classes(font_size.xs, text_dui.base_content)),
-                            Td(
-                                proc['name'],
-                                cls=combine_classes(font_size.xs, font_weight.medium)
-                            ),
-                            Td(
-                                Span(
-                                    f"{proc['gpu_memory_mb']} MB",
-                                    cls=combine_classes(
-                                        badge,
-                                        badge_colors.primary if proc['gpu_memory_mb'] < 4096 else badge_colors.warning if proc['gpu_memory_mb'] < 8192 else badge_colors.error,
-                                        badge_sizes.xs
-                                    )
-                                ),
-                                cls=""
-                            ),
-                            Td(
-                                f"{proc.get('gpu_utilization', 0)}%",
-                                cls=combine_classes(
-                                    font_size.xs,
-                                    text_dui.success if proc.get('gpu_utilization', 0) < 50 else text_dui.warning if proc.get('gpu_utilization', 0) < 80 else text_dui.error
-                                )
-                            ),
-                            Td(
-                                f"GPU {proc['device_id']}",
-                                cls=combine_classes(font_size.xs, text_dui.base_content)
-                            ),
-                        ) for proc in sorted(gpu_info.get('processes', []), key=lambda x: x['gpu_memory_mb'], reverse=True)[:10]],  # Show top 10
-                        cls=""
-                    ),
-                    cls=combine_classes(table, table_sizes.xs, w.full)
-                ),
-                cls=combine_classes(overflow.x.auto, bg_dui.base_200, rounded.lg, p(2)),
-                id=HtmlIds.GPU_PROCESSES_TABLE  # NEW - ID for processes table
-            ) if gpu_info.get('processes') else Div(
-                P("No active GPU processes", cls=combine_classes(font_size.sm, text_dui.base_content, text_align.center, p(4))),
-                cls=combine_classes(bg_dui.base_200, rounded.lg),
-                id=HtmlIds.GPU_PROCESSES_TABLE  # NEW - ID even when no processes
-            ),
-            cls="",
-            id=HtmlIds.GPU_PROCESSES_SECTION  # NEW - ID for entire processes section
-        ) if gpu_info.get('processes') is not None else None,
+        # GPU Processes Section - render using helper
+        render_gpu_processes_section(gpu_info),
 
         cls=str(card_body),
         id=HtmlIds.GPU_CARD_BODY
     )
 
-# %% ../../nbs/components/cards.ipynb 23
+# %% ../../nbs/components/cards.ipynb 28
+def render_temperature_sensors(
+    temp_info:list  # List of dictionaries containing temperature information
+)-> FT:  # A Div element containing temperature sensors
+    """Render just the temperature sensors section."""
+    # Group temperatures by type
+    grouped_temps = {}
+    for temp in temp_info:
+        temp_type = temp['type']
+        if temp_type not in grouped_temps:
+            grouped_temps[temp_type] = []
+        grouped_temps[temp_type].append(temp)
+
+    return Div(
+        *[Div(
+            # Sensor type header
+            P(temp_type.replace('_', ' ').title(),
+              cls=combine_classes(font_size.sm, font_weight.semibold, m.b(2), text_dui.base_content)),
+
+            # Individual sensors
+            Div(
+                *[Div(
+                    Label(
+                        Span(sensor['label'], cls=combine_classes(font_size.xs, text_dui.base_content)),
+                        Label(
+                            Span(
+                                f"{sensor['current']:.1f}°C",
+                                cls=combine_classes(
+                                    font_weight.medium,
+                                    get_temperature_color(
+                                        sensor['current'],
+                                        sensor['high'] or 85,
+                                        sensor['critical'] or 95
+                                    )
+                                )
+                            ),
+                            cls=combine_classes(flex_display, items.center)
+                        ),
+                        cls=combine_classes(flex_display, justify.between, items.center)
+                    ),
+                    cls=combine_classes(p(2), bg_dui.base_200, rounded.md, m.b(2))
+                ) for sensor in sensors],
+                cls=""
+            ),
+            cls=str(m.b(3))
+        ) for temp_type, sensors in grouped_temps.items()],
+        cls="",
+        id=HtmlIds.TEMPERATURE_SENSORS
+    )
+
+# %% ../../nbs/components/cards.ipynb 29
 def render_temperature_card(
     temp_info:list  # List of dictionaries containing temperature sensor information
 )-> FT:  # A Div element containing the temperature sensors card
-    """Render the temperature sensors card."""
+    """Render the temperature sensors card using helper functions."""
     if not temp_info:
         return Div(
             Div(
@@ -647,14 +742,6 @@ def render_temperature_card(
             ),
             cls=str(card_body)
         )
-
-    # Group temperatures by type
-    grouped_temps = {}
-    for temp in temp_info:
-        temp_type = temp['type']
-        if temp_type not in grouped_temps:
-            grouped_temps[temp_type] = []
-        grouped_temps[temp_type].append(temp)
 
     # Find the highest temperature for the header badge
     max_temp = max((t['current'] for t in temp_info), default=0)
@@ -673,43 +760,8 @@ def render_temperature_card(
             cls=combine_classes(flex_display, justify.between, items.center, m.b(4))
         ),
 
-        # Temperature sensors - can be updated independently
-        Div(
-            *[Div(
-                # Sensor type header
-                P(temp_type.replace('_', ' ').title(),
-                  cls=combine_classes(font_size.sm, font_weight.semibold, m.b(2), text_dui.base_content)),
-
-                # Individual sensors
-                Div(
-                    *[Div(
-                        Label(
-                            Span(sensor['label'], cls=combine_classes(font_size.xs, text_dui.base_content)),
-                            Label(
-                                Span(
-                                    f"{sensor['current']:.1f}°C",
-                                    cls=combine_classes(
-                                        font_weight.medium,
-                                        get_temperature_color(
-                                            sensor['current'],
-                                            sensor['high'] or 85,
-                                            sensor['critical'] or 95
-                                        )
-                                    )
-                                ),
-                                cls=combine_classes(flex_display, items.center)
-                            ),
-                            cls=combine_classes(flex_display, justify.between, items.center)
-                        ),
-                        cls=combine_classes(p(2), bg_dui.base_200, rounded.md, m.b(2))
-                    ) for sensor in sensors],
-                    cls=""
-                ),
-                cls=str(m.b(3))
-            ) for temp_type, sensors in grouped_temps.items()],
-            cls="",
-            id=HtmlIds.TEMPERATURE_SENSORS  # NEW - ID for sensors section
-        ),
+        # Temperature sensors - render using helper
+        render_temperature_sensors(temp_info),
 
         cls=str(card_body),
         id=HtmlIds.TEMPERATURE_CARD_BODY
