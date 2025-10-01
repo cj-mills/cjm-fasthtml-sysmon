@@ -254,6 +254,7 @@ def render_disk_card(
             cls=str(m.b(4))
         ),
 
+        # Disk entries - can be updated independently
         Div(
             *[Div(
                 Div(
@@ -268,7 +269,8 @@ def render_disk_card(
                   cls=combine_classes(font_size.xs, text_dui.base_content, m.t(1))),
                 cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
             ) for disk in disk_info[:5]],  # Limit to 5 disks for UI clarity
-            cls=""
+            cls="",
+            id=HtmlIds.DISK_ENTRIES  # NEW - ID for disk entries section
         ),
 
         cls=str(card_body),
@@ -306,7 +308,7 @@ def render_network_card(
             cls=combine_classes(flex_display, justify.between, items.center, m.b(4))
         ),
 
-        # Network interfaces
+        # Network interfaces - can be updated independently
         Div(
             *[Div(
                 # Interface header
@@ -361,10 +363,11 @@ def render_network_card(
 
                 cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
             ) for interface in interfaces[:3]],  # Limit to 3 interfaces for UI clarity
-            cls=""
+            cls="",
+            id=HtmlIds.NETWORK_INTERFACES  # NEW - ID for interfaces section
         ),
 
-        # Connection statistics
+        # Connection statistics - can be updated independently
         Div(
             P("Connections", cls=combine_classes(font_size.sm, font_weight.medium, m.b(2))),
             Div(
@@ -374,7 +377,8 @@ def render_network_card(
                 render_stat_card("Time Wait", str(connections['time_wait'])),
                 cls=combine_classes(stats, bg_dui.base_200, rounded.lg, p(2), font_size.xs, overflow.x.auto, w.full)
             ),
-            cls=str(m.t(3))
+            cls=str(m.t(3)),
+            id=HtmlIds.NETWORK_CONNECTIONS  # NEW - ID for connections section
         ),
 
         cls=str(card_body),
@@ -463,6 +467,7 @@ def render_gpu_card(
             cls=combine_classes(flex_display, justify.between, items.center, m.b(4))
         ),
 
+        # GPU Metrics Section - can be updated independently
         Div(
             *[Div(
                 P(details['name'], cls=combine_classes(font_size.sm, font_weight.medium, m.b(2))),
@@ -555,10 +560,11 @@ def render_gpu_card(
 
                 cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
             ) for gpu_id, details in gpu_info['details'].items()],
-            cls=""
+            cls="",
+            id=HtmlIds.GPU_METRICS  # NEW - ID for metrics section
         ),
 
-        # GPU Processes section (if any)
+        # GPU Processes section (if any) - can be updated independently
         Div(
             Div(cls=combine_classes(divider, m.y(3))),
             P("GPU Processes", cls=combine_classes(font_size.sm, font_weight.semibold, m.b(3), text_dui.base_content)),
@@ -609,12 +615,15 @@ def render_gpu_card(
                     ),
                     cls=combine_classes(table, table_sizes.xs, w.full)
                 ),
-                cls=combine_classes(overflow.x.auto, bg_dui.base_200, rounded.lg, p(2))
+                cls=combine_classes(overflow.x.auto, bg_dui.base_200, rounded.lg, p(2)),
+                id=HtmlIds.GPU_PROCESSES_TABLE  # NEW - ID for processes table
             ) if gpu_info.get('processes') else Div(
                 P("No active GPU processes", cls=combine_classes(font_size.sm, text_dui.base_content, text_align.center, p(4))),
-                cls=combine_classes(bg_dui.base_200, rounded.lg)
+                cls=combine_classes(bg_dui.base_200, rounded.lg),
+                id=HtmlIds.GPU_PROCESSES_TABLE  # NEW - ID even when no processes
             ),
-            cls=""
+            cls="",
+            id=HtmlIds.GPU_PROCESSES_SECTION  # NEW - ID for entire processes section
         ) if gpu_info.get('processes') is not None else None,
 
         cls=str(card_body),
@@ -664,6 +673,7 @@ def render_temperature_card(
             cls=combine_classes(flex_display, justify.between, items.center, m.b(4))
         ),
 
+        # Temperature sensors - can be updated independently
         Div(
             *[Div(
                 # Sensor type header
@@ -697,7 +707,8 @@ def render_temperature_card(
                 ),
                 cls=str(m.b(3))
             ) for temp_type, sensors in grouped_temps.items()],
-            cls=""
+            cls="",
+            id=HtmlIds.TEMPERATURE_SENSORS  # NEW - ID for sensors section
         ),
 
         cls=str(card_body),

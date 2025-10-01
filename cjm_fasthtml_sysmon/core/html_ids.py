@@ -16,6 +16,7 @@ class HtmlIds:
     # Tables
     CPU_PROCESSES_TABLE = "cpu-processes-table"
     MEMORY_PROCESSES_TABLE = "memory-processes-table"
+    GPU_PROCESSES_TABLE = "gpu-processes-table"  # NEW - for GPU processes table
 
     # Card bodies (main content containers)
     CPU_CARD_BODY = "cpu-card-body"
@@ -66,6 +67,21 @@ class HtmlIds:
     SSE_CONNECTION = "sse-connection"
     CONNECTION_STATUS = "connection-status"
     TIMESTAMP = "timestamp"
+
+    # NEW - Granular content sections for better scroll preservation
+    # GPU card sections
+    GPU_METRICS = "gpu-metrics"  # GPU utilization, memory, temp, power metrics
+    GPU_PROCESSES_SECTION = "gpu-processes-section"  # Entire GPU processes section
+
+    # Network card sections
+    NETWORK_INTERFACES = "network-interfaces"  # Network interfaces list
+    NETWORK_CONNECTIONS = "network-connections"  # Connection statistics
+
+    # Disk card sections
+    DISK_ENTRIES = "disk-entries"  # Disk entries list
+
+    # Temperature card sections
+    TEMPERATURE_SENSORS = "temperature-sensors"  # Temperature sensors list
 
     @staticmethod
     def as_selector(id_str: str) -> str:

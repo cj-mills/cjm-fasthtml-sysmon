@@ -53,25 +53,25 @@ graph LR
     monitors_sensors[monitors.sensors<br/>sensors]
     monitors_system[monitors.system<br/>system]
 
-    components_base --> core_html_ids
     components_base --> monitors_processes
-    components_cards --> core_utils
-    components_cards --> monitors_gpu
-    components_cards --> core_html_ids
-    components_cards --> monitors_network
-    components_cards --> monitors_sensors
-    components_cards --> components_tables
-    components_cards --> monitors_memory
-    components_cards --> components_base
-    components_cards --> monitors_cpu
-    components_cards --> monitors_processes
-    components_cards --> monitors_disk
+    components_base --> core_html_ids
     components_cards --> monitors_system
+    components_cards --> monitors_network
+    components_cards --> components_base
+    components_cards --> monitors_memory
+    components_cards --> monitors_cpu
+    components_cards --> components_tables
+    components_cards --> core_utils
     components_cards --> components_common
+    components_cards --> monitors_sensors
+    components_cards --> monitors_disk
+    components_cards --> core_html_ids
+    components_cards --> monitors_gpu
+    components_cards --> monitors_processes
     components_common --> core_utils
     components_modals --> core_html_ids
-    components_tables --> core_html_ids
     components_tables --> monitors_processes
+    components_tables --> core_html_ids
 ```
 
 *19 cross-module dependencies detected*
