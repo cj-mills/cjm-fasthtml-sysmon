@@ -579,7 +579,7 @@ def render_gpu_card(
                         *[Tr(
                             Td(str(proc['pid']), cls=combine_classes(font_size.xs, text_dui.base_content)),
                             Td(
-                                proc['name'][:40] + "..." if len(proc['name']) > 40 else proc['name'],
+                                proc['name'],
                                 cls=combine_classes(font_size.xs, font_weight.medium)
                             ),
                             Td(
