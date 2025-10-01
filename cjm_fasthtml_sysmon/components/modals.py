@@ -7,6 +7,7 @@ __all__ = ['render_settings_modal']
 
 # %% ../../nbs/components/modals.ipynb 3
 from fasthtml.common import *
+from fasthtml.common import FT
 
 # DaisyUI imports
 from cjm_fasthtml_daisyui.components.actions.button import btn, btn_colors, btn_sizes, btn_styles, btn_modifiers
@@ -27,7 +28,9 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 from ..core.html_ids import HtmlIds
 
 # %% ../../nbs/components/modals.ipynb 5
-def render_settings_modal(refresh_intervals:dict):
+def render_settings_modal(
+    refresh_intervals:dict  # Dictionary containing refresh interval values for each component
+)-> FT:  # A Dialog element containing the settings modal
     """Render the settings modal for configuring refresh intervals."""
     return Dialog(
         Div(

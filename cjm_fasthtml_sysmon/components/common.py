@@ -6,6 +6,7 @@
 __all__ = ['render_stat_card', 'render_progress_bar']
 
 # %% ../../nbs/components/common.ipynb 3
+from fasthtml.common import FT
 from fasthtml.common import Div, Span, Progress
 from ..core.utils import get_progress_color
 
@@ -22,7 +23,12 @@ from cjm_fasthtml_tailwind.utilities.typography import font_size
 from cjm_fasthtml_tailwind.core.base import combine_classes
 
 # %% ../../nbs/components/common.ipynb 5
-def render_stat_card(title_text, value_text, desc_text=None, value_color=None):
+def render_stat_card(
+    title_text:str,  # The title text for the stat card
+    value_text:str,  # The main value to display in the stat card
+    desc_text:str=None,  # Optional description text below the value
+    value_color:str=None  # Optional color class for the value text
+)-> FT:  # A Div element containing the stat card with consistent styling
     """Render a stat card with consistent styling."""
     value_classes = [stat_value]
     if value_color:
@@ -36,7 +42,11 @@ def render_stat_card(title_text, value_text, desc_text=None, value_color=None):
     )
 
 # %% ../../nbs/components/common.ipynb 7
-def render_progress_bar(value, max_value=100, label=None):
+def render_progress_bar(
+    value:float,  # The current progress value
+    max_value:float=100,  # The maximum value for the progress bar (default: 100)
+    label:str=None  # Optional label text to display above the progress bar
+)-> FT:  # A Div element containing the progress bar with optional label
     """Render a progress bar with label."""
     color = get_progress_color(value)
 

@@ -7,6 +7,7 @@ __all__ = ['render_process_count', 'render_process_status']
 
 # %% ../../nbs/components/base.ipynb 3
 from fasthtml.common import *
+from fasthtml.common import FT
 
 # DaisyUI imports
 from cjm_fasthtml_daisyui.components.data_display.badge import badge, badge_colors, badge_sizes
@@ -20,8 +21,10 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 from ..core.html_ids import HtmlIds
 
 # %% ../../nbs/components/base.ipynb 5
-def render_process_count(total):
-    """Render just the process count badge."""
+def render_process_count(
+    total:int  # The total number of processes
+)-> FT:  # A Span element containing the process count badge
+    """Render the process count badge."""
     return Span(
         f"{total} processes",
         cls=combine_classes(badge, badge_colors.primary, badge_sizes.lg),
@@ -29,8 +32,10 @@ def render_process_count(total):
     )
 
 # %% ../../nbs/components/base.ipynb 8
-def render_process_status(status_counts):
-    """Render just the process status badges."""
+def render_process_status(
+    status_counts:dict  # Dictionary mapping process status names to their counts
+)-> FT:  # A Div element containing status badges
+    """Render the process status badges."""
     return Div(
         *[Span(
             f"{status}: {count}",

@@ -9,6 +9,7 @@ __all__ = ['get_cpu_text_color', 'render_cpu_cores_grid', 'render_os_info_card',
 
 # %% ../../nbs/components/cards.ipynb 3
 from fasthtml.common import *
+from fasthtml.common import FT
 
 # DaisyUI imports
 from cjm_fasthtml_daisyui.components.data_display.card import card, card_body, card_title, card_actions
@@ -20,6 +21,7 @@ from cjm_fasthtml_daisyui.components.feedback.progress import progress, progress
 from cjm_fasthtml_daisyui.components.feedback.alert import alert, alert_colors
 from cjm_fasthtml_daisyui.components.layout.divider import divider
 from cjm_fasthtml_daisyui.utilities.semantic_colors import bg_dui, text_dui, border_dui
+from cjm_fasthtml_daisyui.builders.colors import ColoredUtilityDaisyUI
 
 # Tailwind imports
 from cjm_fasthtml_tailwind.utilities.layout import overflow
@@ -58,7 +60,9 @@ from cjm_fasthtml_sysmon.components.tables import (
 from ..core.html_ids import HtmlIds
 
 # %% ../../nbs/components/cards.ipynb 5
-def get_cpu_text_color(percent):
+def get_cpu_text_color(
+    percent:float  # CPU usage percentage
+)-> ColoredUtilityDaisyUI:  # CSS class string for semantic color based on CPU usage
     """Get semantic color based on CPU usage percentage."""
     if percent < 20:
         return text_dui.base_content.opacity(60)  # Idle - subtle
@@ -70,7 +74,9 @@ def get_cpu_text_color(percent):
         return text_dui.error    # High usage - red
 
 # %% ../../nbs/components/cards.ipynb 7
-def render_cpu_cores_grid(cpu_percents):
+def render_cpu_cores_grid(
+    cpu_percents:list  # List of CPU usage percentages for each core
+)-> FT:  # A Div element containing a responsive grid of CPU core usage
     """Render CPU cores as a responsive grid with color-coded percentages.
 
     Grid columns are optimized for container width at each breakpoint:
@@ -126,7 +132,7 @@ def render_cpu_cores_grid(cpu_percents):
     )
 
 # %% ../../nbs/components/cards.ipynb 9
-def render_os_info_card():
+def render_os_info_card()-> FT:  # A Div element containing the OS information card
     """Render the OS information card."""
     info = get_static_system_info()
 
@@ -146,7 +152,9 @@ def render_os_info_card():
     )
 
 # %% ../../nbs/components/cards.ipynb 11
-def render_cpu_card(cpu_info):
+def render_cpu_card(
+    cpu_info:dict  # Dictionary containing CPU usage information
+)-> FT:  # A Div element containing the CPU usage card
     """Render the CPU usage card."""
     return Div(
         Div(
@@ -195,7 +203,9 @@ def render_cpu_card(cpu_info):
     )
 
 # %% ../../nbs/components/cards.ipynb 13
-def render_memory_card(mem_info):
+def render_memory_card(
+    mem_info:dict  # Dictionary containing memory usage information
+)-> FT:  # A Div element containing the memory usage card
     """Render the memory usage card."""
     return Div(
         Div(
@@ -234,7 +244,9 @@ def render_memory_card(mem_info):
     )
 
 # %% ../../nbs/components/cards.ipynb 15
-def render_disk_card(disk_info):
+def render_disk_card(
+    disk_info:list  # List of dictionaries containing disk usage information
+)-> FT:  # A Div element containing the disk usage card
     """Render the disk usage card."""
     return Div(
         Div(
@@ -264,7 +276,9 @@ def render_disk_card(disk_info):
     )
 
 # %% ../../nbs/components/cards.ipynb 17
-def render_network_card(net_info):
+def render_network_card(
+    net_info:dict  # Dictionary containing network interface and connection information
+)-> FT:  # A Div element containing the network monitoring card
     """Render the network monitoring card."""
     interfaces = net_info['interfaces']
     connections = net_info['connections']
@@ -368,7 +382,9 @@ def render_network_card(net_info):
     )
 
 # %% ../../nbs/components/cards.ipynb 19
-def render_process_card(proc_info):
+def render_process_card(
+    proc_info:dict  # Dictionary containing process information and statistics
+)-> FT:  # A Div element containing the process monitoring card
     """Render the process monitoring card."""
     return Div(
         # Header with process count
@@ -420,7 +436,9 @@ def render_process_card(proc_info):
     )
 
 # %% ../../nbs/components/cards.ipynb 21
-def render_gpu_card(gpu_info):
+def render_gpu_card(
+    gpu_info:dict  # Dictionary containing GPU information and statistics
+)-> FT:  # A Div element containing the GPU information card
     """Render the GPU information card."""
     if not gpu_info['available']:
         return Div(
@@ -604,7 +622,9 @@ def render_gpu_card(gpu_info):
     )
 
 # %% ../../nbs/components/cards.ipynb 23
-def render_temperature_card(temp_info):
+def render_temperature_card(
+    temp_info:list  # List of dictionaries containing temperature sensor information
+)-> FT:  # A Div element containing the temperature sensors card
     """Render the temperature sensors card."""
     if not temp_info:
         return Div(

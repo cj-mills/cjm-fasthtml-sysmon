@@ -15,7 +15,7 @@ import psutil
 NETWORK_STATS_CACHE = {}
 
 # %% ../../nbs/monitors/network.ipynb 7
-def get_network_info():
+def get_network_info():  # A dictionary containing network interface information and connection statistics
     """Get network interface information and statistics."""
     interfaces = []
     stats = psutil.net_io_counters(pernic=True)

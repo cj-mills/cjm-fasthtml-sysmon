@@ -7,6 +7,7 @@ __all__ = ['render_cpu_processes_table', 'render_memory_processes_table']
 
 # %% ../../nbs/components/tables.ipynb 3
 from fasthtml.common import *
+from fasthtml.common import FT
 
 # DaisyUI imports
 from cjm_fasthtml_daisyui.components.data_display.badge import badge, badge_colors, badge_sizes
@@ -21,7 +22,9 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 from ..core.html_ids import HtmlIds
 
 # %% ../../nbs/components/tables.ipynb 5
-def render_cpu_processes_table(top_cpu):
+def render_cpu_processes_table(
+    top_cpu:list  # List of dictionaries containing top CPU-consuming process information
+)-> FT:  # A Div element containing the CPU processes table
     """Render the CPU processes table."""
     return Div(
         Table(
@@ -63,7 +66,9 @@ def render_cpu_processes_table(top_cpu):
     )
 
 # %% ../../nbs/components/tables.ipynb 7
-def render_memory_processes_table(top_memory):
+def render_memory_processes_table(
+    top_memory:list  # List of dictionaries containing top memory-consuming process information
+)-> FT:  # A Div element containing the memory processes table
     """Render the memory processes table."""
     return Div(
         Table(

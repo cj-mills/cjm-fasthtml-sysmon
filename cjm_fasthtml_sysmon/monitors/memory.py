@@ -9,7 +9,7 @@ __all__ = ['get_memory_info']
 import psutil
 
 # %% ../../nbs/monitors/memory.ipynb 5
-def get_memory_info():
+def get_memory_info():  # A dictionary containing memory usage information
     """Get current memory usage information."""
     mem = psutil.virtual_memory()
     swap = psutil.swap_memory()

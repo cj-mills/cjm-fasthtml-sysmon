@@ -20,7 +20,7 @@ from cjm_fasthtml_daisyui.components.feedback.progress import progress_colors
 from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
 
 # %% ../../nbs/core/utils.ipynb 5
-def find_free_port():
+def find_free_port():  # An available port number
     """Find an available port."""
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
         s.bind(('', 0))
@@ -28,7 +28,9 @@ def find_free_port():
         return s.getsockname()[1]
 
 # %% ../../nbs/core/utils.ipynb 6
-def format_bytes(bytes_value):
+def format_bytes(
+    bytes_value:int  # The number of bytes to format
+):  # A formatted string representation of the byte value
     """Format bytes to human readable string."""
     for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
         if bytes_value < 1024.0:
@@ -37,7 +39,9 @@ def format_bytes(bytes_value):
     return f"{bytes_value:.1f} PB"
 
 # %% ../../nbs/core/utils.ipynb 7
-def format_bandwidth(bytes_per_sec):
+def format_bandwidth(
+    bytes_per_sec:float  # The number of bytes per second to format
+):  # A formatted string representation of the bandwidth value
     """Format bandwidth to human readable string."""
     if bytes_per_sec < 1024:
         return f"{bytes_per_sec:.0f} B/s"
@@ -49,7 +53,9 @@ def format_bandwidth(bytes_per_sec):
         return f"{bytes_per_sec / (1024 * 1024 * 1024):.1f} GB/s"
 
 # %% ../../nbs/core/utils.ipynb 8
-def format_uptime(boot_time_str):
+def format_uptime(
+    boot_time_str:str  # Boot time in '%Y-%m-%d %H:%M:%S' format
+):  # A formatted string representation of the uptime
     """Format uptime from boot time string."""
     boot_time = datetime.strptime(boot_time_str, '%Y-%m-%d %H:%M:%S')
     uptime = datetime.now() - boot_time
@@ -65,7 +71,9 @@ def format_uptime(boot_time_str):
         return f"{minutes}m"
 
 # %% ../../nbs/core/utils.ipynb 9
-def get_progress_color(percent):
+def get_progress_color(
+    percent:float  # The percentage value to determine color for
+):  # A progress color from the DaisyUI color scheme
     """Get progress bar color based on percentage."""
     if percent < 50:
         return progress_colors.success
@@ -75,7 +83,11 @@ def get_progress_color(percent):
         return progress_colors.error
 
 # %% ../../nbs/core/utils.ipynb 10
-def get_temperature_color(temp_celsius, high=85, critical=95):
+def get_temperature_color(
+    temp_celsius:float,  # The temperature value in Celsius
+    high:int=85,  # The threshold for high temperature
+    critical:int=95  # The threshold for critical temperature
+):  # A text color from the DaisyUI semantic colors
     """Get color for temperature display."""
     if temp_celsius < 50:
         return text_dui.success
@@ -87,7 +99,11 @@ def get_temperature_color(temp_celsius, high=85, critical=95):
         return text_dui.error
 
 # %% ../../nbs/core/utils.ipynb 11
-def get_temperature_badge_color(temp_celsius, high=85, critical=95):
+def get_temperature_badge_color(
+    temp_celsius:float,  # The temperature value in Celsius
+    high:int=85,  # The threshold for high temperature
+    critical:int=95  # The threshold for critical temperature
+):  # A badge color from the DaisyUI color scheme
     """Get badge color for temperature."""
     if temp_celsius < 50:
         return badge_colors.success
@@ -99,7 +115,9 @@ def get_temperature_badge_color(temp_celsius, high=85, critical=95):
         return badge_colors.error
 
 # %% ../../nbs/core/utils.ipynb 12
-def open_browser(url):
+def open_browser(
+    url:str  # The URL to open in the browser
+):  # None
     """Open browser based on environment settings."""
     import os
 
