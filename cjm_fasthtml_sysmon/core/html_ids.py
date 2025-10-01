@@ -26,6 +26,15 @@ class HtmlIds:
     GPU_CARD_BODY = "gpu-card-body"
     TEMPERATURE_CARD_BODY = "temperature-card-body"
 
+    # Card containers
+    CPU_CARD = "cpu-card"
+    MEMORY_CARD = "memory-card"
+    DISK_CARD = "disk-card"
+    NETWORK_CARD = "network-card"
+    PROCESS_CARD = "process-card"
+    GPU_CARD = "gpu-card"
+    TEMPERATURE_CARD = "temperature-card"
+
     # Tab navigation
     CPU_TAB = "cpu-tab"
     MEM_TAB = "mem-tab"
@@ -52,6 +61,11 @@ class HtmlIds:
     GPU_INTERVAL_VALUE = "gpu-interval-value"
     TEMPERATURE_INTERVAL = "temperature-interval"
     TEMPERATURE_INTERVAL_VALUE = "temperature-interval-value"
+
+    # SSE and status
+    SSE_CONNECTION = "sse-connection"
+    CONNECTION_STATUS = "connection-status"
+    TIMESTAMP = "timestamp"
 
     @staticmethod
     def as_selector(id_str: str) -> str:
