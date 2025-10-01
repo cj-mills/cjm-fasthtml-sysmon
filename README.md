@@ -6,5 +6,5 @@
 ## Install
 
 ``` bash
-$ pip install cjm_fasthtml_sysmon
+pip install cjm_fasthtml_sysmon
 ```
