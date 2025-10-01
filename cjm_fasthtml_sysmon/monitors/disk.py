@@ -9,7 +9,7 @@ __all__ = ['get_disk_info']
 import psutil
 
 # %% ../../nbs/monitors/disk.ipynb 5
-def get_disk_info():  # A list of dictionaries containing disk usage information for each partition
+def get_disk_info() -> list:  # A list of dictionaries containing disk usage information for each partition
     """Get disk usage information."""
     partitions = psutil.disk_partitions()
     disk_info = []

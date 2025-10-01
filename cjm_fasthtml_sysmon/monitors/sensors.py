@@ -10,7 +10,7 @@ import subprocess
 import psutil
 
 # %% ../../nbs/monitors/sensors.ipynb 5
-def get_temperature_info():  # A list of dictionaries containing temperature sensor information
+def get_temperature_info() -> list:  # A list of dictionaries containing temperature sensor information
     """Get temperature sensor information."""
     temps = []
 

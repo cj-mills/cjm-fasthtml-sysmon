@@ -13,7 +13,7 @@ import psutil
 from datetime import datetime
 
 # %% ../../nbs/monitors/system.ipynb 5
-def get_static_system_info():  # A dictionary containing static system information
+def get_static_system_info() -> dict:  # A dictionary containing static system information
     """Get system information that doesn't change during runtime."""
     
     try:

@@ -9,7 +9,7 @@ __all__ = ['get_gpu_info']
 import subprocess
 
 # %% ../../nbs/monitors/gpu.ipynb 5
-def get_gpu_info():  # A dictionary containing GPU availability, type, details, and process information
+def get_gpu_info() -> dict:  # A dictionary containing GPU availability, type, details, and process information
     """Check for GPU availability and get info using nvitop."""
     gpu_info = {'available': False, 'type': 'None', 'details': {}, 'processes': []}
 

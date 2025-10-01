@@ -9,7 +9,7 @@ __all__ = ['get_process_info']
 import psutil
 
 # %% ../../nbs/monitors/processes.ipynb 5
-def get_process_info(top_n:int=5):  # Number of top processes to return for CPU and memory categories  # A dictionary containing top processes and process statistics
+def get_process_info(top_n:int=5) -> dict:  # Number of top processes to return for CPU and memory categories  # A dictionary containing top processes and process statistics
     """Get top processes by CPU and memory usage."""
     processes = []
 

@@ -9,7 +9,7 @@ __all__ = ['get_cpu_info']
 import psutil
 
 # %% ../../nbs/monitors/cpu.ipynb 5
-def get_cpu_info():  # A dictionary containing CPU usage information
+def get_cpu_info() -> dict:  # A dictionary containing CPU usage information
     """Get current CPU usage information."""
     cpu_percent = psutil.cpu_percent(interval=0.1, percpu=False)
     cpu_percent_per_core = psutil.cpu_percent(interval=0.1, percpu=True)
