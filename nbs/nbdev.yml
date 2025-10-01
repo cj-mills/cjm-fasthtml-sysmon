@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "cjm-fasthtml-sysmon"
+  site-url: "https://cj-mills.github.io/cjm-fasthtml-sysmon"
+  description: "FastHTML components and utilities for real-time system resource monitoring with SSE-based live updates."
+  repo-branch: main
+  repo-url: "https://github.com/cj-mills/cjm-fasthtml-sysmon"
