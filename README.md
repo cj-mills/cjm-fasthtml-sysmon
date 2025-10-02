@@ -17,7 +17,7 @@ pip install cjm_fasthtml_sysmon
     │   ├── cards.ipynb   # Card components for rendering system monitoring dashboards with CPU, memory, disk, network, GPU, process, and temperature information.
     │   ├── common.ipynb  # Common UI components for rendering progress bars and stat cards.
     │   ├── modals.ipynb  # Modal components for configuring system monitoring refresh intervals.
-    │   └── tables.ipynb  # Table components for displaying top CPU and memory consuming processes.
+    │   └── tables.ipynb  # Table components for displaying top CPU, memory, and GPU process information.
     ├── core/ (2)
     │   ├── html_ids.ipynb  # Centralized HTML ID constants for the application
     │   └── utils.ipynb     # Utility functions for formatting data and managing UI colors.
@@ -53,28 +53,29 @@ graph LR
     monitors_sensors[monitors.sensors<br/>sensors]
     monitors_system[monitors.system<br/>system]
 
-    components_base --> monitors_processes
     components_base --> core_html_ids
-    components_cards --> monitors_cpu
-    components_cards --> components_base
-    components_cards --> components_tables
-    components_cards --> core_html_ids
-    components_cards --> monitors_system
-    components_cards --> monitors_processes
-    components_cards --> monitors_sensors
-    components_cards --> monitors_memory
+    components_base --> monitors_processes
     components_cards --> core_utils
     components_cards --> components_common
+    components_cards --> monitors_cpu
     components_cards --> monitors_network
-    components_cards --> monitors_disk
     components_cards --> monitors_gpu
+    components_cards --> components_tables
+    components_cards --> monitors_system
+    components_cards --> components_base
+    components_cards --> core_html_ids
+    components_cards --> monitors_processes
+    components_cards --> monitors_memory
+    components_cards --> monitors_disk
+    components_cards --> monitors_sensors
     components_common --> core_utils
     components_modals --> core_html_ids
-    components_tables --> monitors_processes
+    components_tables --> monitors_gpu
     components_tables --> core_html_ids
+    components_tables --> monitors_processes
 ```
 
-*19 cross-module dependencies detected*
+*20 cross-module dependencies detected*
 
 ## CLI Reference
 
@@ -548,15 +549,16 @@ def get_static_system_info() -> dict:  # A dictionary containing static system i
 
 ### tables (`tables.ipynb`)
 
-> Table components for displaying top CPU and memory consuming
-> processes.
+> Table components for displaying top CPU, memory, and GPU process
+> information.
 
 #### Import
 
 ``` python
 from cjm_fasthtml_sysmon.components.tables import (
     render_cpu_processes_table,
-    render_memory_processes_table
+    render_memory_processes_table,
+    render_gpu_processes_table
 )
 ```
 
@@ -574,6 +576,13 @@ def render_memory_processes_table(
     top_memory:list  # List of dictionaries containing top memory-consuming process information
 )-> FT:  # A Div element containing the memory processes table
     "Render the memory processes table."
+```
+
+``` python
+def render_gpu_processes_table(
+    gpu_processes:list  # List of dictionaries containing GPU process information
+)-> FT:  # A Div element containing the GPU processes table
+    "Render the GPU processes table."
 ```
 
 ### utils (`utils.ipynb`)

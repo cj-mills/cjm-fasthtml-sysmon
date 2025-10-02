@@ -54,7 +54,8 @@ from cjm_fasthtml_sysmon.components.common import (
 )
 from cjm_fasthtml_sysmon.components.tables import (
     render_cpu_processes_table,
-    render_memory_processes_table
+    render_memory_processes_table,
+    render_gpu_processes_table
 )
 
 # HTML IDs
@@ -580,59 +581,9 @@ def render_gpu_processes_section(
         Div(cls=combine_classes(divider, m.y(3))),
         P("GPU Processes", cls=combine_classes(font_size.sm, font_weight.semibold, m.b(3), text_dui.base_content)),
 
-        # Process table
-        Div(
-            Table(
-                Thead(
-                    Tr(
-                        Th("PID", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
-                        Th("Process", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
-                        Th("GPU Memory", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
-                        Th("GPU Usage", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
-                        Th("Device", cls=combine_classes(font_size.xs, font_weight.medium, text_dui.base_content)),
-                    )
-                ),
-                Tbody(
-                    *[Tr(
-                        Td(str(proc['pid']), cls=combine_classes(font_size.xs, text_dui.base_content)),
-                        Td(
-                            proc['name'],
-                            cls=combine_classes(font_size.xs, font_weight.medium)
-                        ),
-                        Td(
-                            Span(
-                                f"{proc['gpu_memory_mb']} MB",
-                                cls=combine_classes(
-                                    badge,
-                                    badge_colors.primary if proc['gpu_memory_mb'] < 4096 else badge_colors.warning if proc['gpu_memory_mb'] < 8192 else badge_colors.error,
-                                    badge_sizes.xs
-                                )
-                            ),
-                            cls=""
-                        ),
-                        Td(
-                            f"{proc.get('gpu_utilization', 0)}%",
-                            cls=combine_classes(
-                                font_size.xs,
-                                text_dui.success if proc.get('gpu_utilization', 0) < 50 else text_dui.warning if proc.get('gpu_utilization', 0) < 80 else text_dui.error
-                            )
-                        ),
-                        Td(
-                            f"GPU {proc['device_id']}",
-                            cls=combine_classes(font_size.xs, text_dui.base_content)
-                        ),
-                    ) for proc in sorted(gpu_info.get('processes', []), key=lambda x: x['gpu_memory_mb'], reverse=True)[:10]],
-                    cls=""
-                ),
-                cls=combine_classes(table, table_sizes.xs, w.full)
-            ),
-            cls=combine_classes(overflow.x.auto, bg_dui.base_200, rounded.lg, p(2)),
-            id=HtmlIds.GPU_PROCESSES_TABLE
-        ) if gpu_info.get('processes') else Div(
-            P("No active GPU processes", cls=combine_classes(font_size.sm, text_dui.base_content, text_align.center, p(4))),
-            cls=combine_classes(bg_dui.base_200, rounded.lg),
-            id=HtmlIds.GPU_PROCESSES_TABLE
-        ),
+        # Process table - now uses the extracted table function
+        render_gpu_processes_table(gpu_info.get('processes', [])),
+        
         cls="",
         id=HtmlIds.GPU_PROCESSES_SECTION
     )
