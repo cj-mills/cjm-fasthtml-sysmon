@@ -53,26 +53,26 @@ graph LR
     monitors_sensors[monitors.sensors<br/>sensors]
     monitors_system[monitors.system<br/>system]
 
-    components_base --> monitors_processes
     components_base --> core_html_ids
-    components_cards --> monitors_network
+    components_base --> monitors_processes
     components_cards --> monitors_cpu
-    components_cards --> components_tables
     components_cards --> core_utils
-    components_cards --> monitors_gpu
-    components_cards --> core_html_ids
-    components_cards --> monitors_disk
-    components_cards --> components_base
-    components_cards --> monitors_system
     components_cards --> components_common
-    components_cards --> monitors_sensors
+    components_cards --> monitors_system
+    components_cards --> components_tables
+    components_cards --> components_base
     components_cards --> monitors_processes
+    components_cards --> monitors_disk
+    components_cards --> monitors_sensors
+    components_cards --> monitors_network
     components_cards --> monitors_memory
+    components_cards --> core_html_ids
+    components_cards --> monitors_gpu
     components_common --> core_utils
     components_modals --> core_html_ids
-    components_tables --> monitors_gpu
-    components_tables --> core_html_ids
     components_tables --> monitors_processes
+    components_tables --> core_html_ids
+    components_tables --> monitors_gpu
 ```
 
 *20 cross-module dependencies detected*
@@ -558,8 +558,8 @@ def get_static_system_info() -> dict:  # A dictionary containing static system i
 from cjm_fasthtml_sysmon.components.tables import (
     render_cpu_processes_table,
     render_memory_processes_table,
-    render_gpu_processes_table,
-    render_gpu_processes_table_body
+    render_gpu_processes_table_body,
+    render_gpu_processes_table
 )
 ```
 
@@ -580,17 +580,17 @@ def render_memory_processes_table(
 ```
 
 ``` python
-def render_gpu_processes_table(
-    gpu_processes:list  # List of dictionaries containing GPU process information
-)-> FT:  # A Div element containing the GPU processes table
-    "Render the GPU processes table."
-```
-
-``` python
 def render_gpu_processes_table_body(
     gpu_processes:list  # List of dictionaries containing GPU process information
 )-> FT:  # A Div element containing the GPU processes table body
     "Render just the GPU processes table body."
+```
+
+``` python
+def render_gpu_processes_table(
+    gpu_processes:list  # List of dictionaries containing GPU process information
+)-> FT:  # A Div element containing the GPU processes table
+    "Render the GPU processes table."
 ```
 
 ### utils (`utils.ipynb`)
