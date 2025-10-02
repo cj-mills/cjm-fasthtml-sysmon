@@ -53,25 +53,25 @@ graph LR
     monitors_sensors[monitors.sensors<br/>sensors]
     monitors_system[monitors.system<br/>system]
 
-    components_base --> core_html_ids
     components_base --> monitors_processes
-    components_cards --> monitors_cpu
+    components_base --> core_html_ids
     components_cards --> core_utils
-    components_cards --> components_common
-    components_cards --> monitors_system
-    components_cards --> components_tables
-    components_cards --> components_base
-    components_cards --> monitors_processes
-    components_cards --> monitors_disk
-    components_cards --> monitors_sensors
-    components_cards --> monitors_network
-    components_cards --> monitors_memory
     components_cards --> core_html_ids
+    components_cards --> components_base
+    components_cards --> monitors_network
+    components_cards --> components_common
+    components_cards --> components_tables
+    components_cards --> monitors_sensors
+    components_cards --> monitors_processes
+    components_cards --> monitors_system
+    components_cards --> monitors_disk
+    components_cards --> monitors_memory
     components_cards --> monitors_gpu
+    components_cards --> monitors_cpu
     components_common --> core_utils
     components_modals --> core_html_ids
-    components_tables --> monitors_processes
     components_tables --> core_html_ids
+    components_tables --> monitors_processes
     components_tables --> monitors_gpu
 ```
 
@@ -123,6 +123,7 @@ def render_process_status(
 
 ``` python
 from cjm_fasthtml_sysmon.components.cards import (
+    scroll_preserve_script,
     get_cpu_text_color,
     render_cpu_cores_grid,
     render_os_info_card,
