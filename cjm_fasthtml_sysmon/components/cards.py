@@ -603,7 +603,7 @@ def render_gpu_processes_section(
 
         # Process table - now uses the extracted table function
         render_gpu_processes_table(gpu_info.get('processes', [])),
-        scroll_preserve_script,
+        # scroll_preserve_script,
         cls="",
         id=HtmlIds.GPU_PROCESSES_SECTION
     )
