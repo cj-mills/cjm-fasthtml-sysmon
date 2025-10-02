@@ -17,6 +17,7 @@ class HtmlIds:
     CPU_PROCESSES_TABLE = "cpu-processes-table"
     MEMORY_PROCESSES_TABLE = "memory-processes-table"
     GPU_PROCESSES_TABLE = "gpu-processes-table"  # NEW - for GPU processes table
+    GPU_PROCESSES_TABLE_BODY = "gpu-processes-table-body"  # NEW - for GPU processes table body
 
     # Card bodies (main content containers)
     CPU_CARD_BODY = "cpu-card-body"
