@@ -29,36 +29,72 @@ def render_stat_card(
     desc_text:str=None,  # Optional description text below the value
     value_color:str=None  # Optional color class for the value text
 )-> FT:  # A Div element containing the stat card with consistent styling
-    """Render a stat card with consistent styling."""
-    value_classes = [stat_value]
+    """Render a stat card with enhanced value prominence and improved hierarchy.
+    
+    Design improvements:
+    - Value is hero element (2xl font, bold weight)
+    - Title more subtle (xs font with reduced opacity)
+    - Description even more subtle (xs font with further reduced opacity)
+    - Better visual hierarchy through size and weight contrast
+    """
+    from cjm_fasthtml_tailwind.utilities.typography import font_weight
+    
+    value_classes = [stat_value, font_size._2xl, font_weight.bold]
     if value_color:
         value_classes.append(value_color)
+    else:
+        value_classes.append(text_dui.base_content)
 
     return Div(
-        Div(title_text, cls=combine_classes(stat_title, text_dui.base_content)),
+        Div(title_text, cls=combine_classes(
+            stat_title, 
+            font_size.xs,
+            text_dui.base_content.opacity(60)  # More subtle
+        )),
         Div(value_text, cls=combine_classes(*value_classes)),
-        Div(desc_text, cls=str(stat_desc)) if desc_text else None,
+        Div(desc_text, cls=combine_classes(
+            stat_desc,
+            font_size.xs,
+            text_dui.base_content.opacity(50)  # Even more subtle
+        )) if desc_text else None,
         cls=str(stat)
     )
 
-# %% ../../nbs/components/common.ipynb 7
+# %% ../../nbs/components/common.ipynb 9
 def render_progress_bar(
     value:float,  # The current progress value
     max_value:float=100,  # The maximum value for the progress bar (default: 100)
     label:str=None  # Optional label text to display above the progress bar
 )-> FT:  # A Div element containing the progress bar with optional label
-    """Render a progress bar with label."""
+    """Render a progress bar with improved label hierarchy and visibility.
+    
+    Design improvements:
+    - Label is more prominent (sm font, medium weight)
+    - Percentage value is subtle (xs font, reduced opacity)
+    - Progress bar has better height (h-2 instead of default thin bar)
+    - Better vertical spacing
+    """
+    from cjm_fasthtml_tailwind.utilities.typography import font_weight
+    from cjm_fasthtml_tailwind.utilities.sizing import h
+    
     color = get_progress_color(value)
 
     return Div(
         Div(
-            Span(label or f"{value:.1f}%", cls=combine_classes(font_size.xs, text_dui.base_content)),
-            Span(f"{value:.1f}%", cls=combine_classes(font_size.xs, text_dui.base_content)),
-            cls=combine_classes(justify.between, m.b(1), "flex")
+            Span(label or f"{value:.1f}%", cls=combine_classes(
+                font_size.sm,  # Larger, more readable
+                font_weight.medium,  # More prominent
+                text_dui.base_content
+            )),
+            Span(f"{value:.1f}%", cls=combine_classes(
+                font_size.xs,
+                text_dui.base_content.opacity(70)  # More subtle
+            )),
+            cls=combine_classes(justify.between, m.b(2), "flex")  # Increased margin
         ) if label else None,
         Progress(
             value=str(value),
             max=str(max_value),
-            cls=combine_classes(progress, color, w.full)
+            cls=combine_classes(progress, color, w.full, h(2))  # Taller progress bar
         )
     )

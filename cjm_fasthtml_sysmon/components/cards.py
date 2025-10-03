@@ -79,22 +79,28 @@ def get_cpu_text_color(
 def render_cpu_cores_grid(
     cpu_percents:list  # List of CPU usage percentages for each core
 )-> FT:  # A Div element containing a responsive grid of CPU core usage
-    """Render CPU cores as a responsive grid with color-coded percentages.
+    """Render CPU cores as a responsive grid with improved readability.
 
+    Design improvements:
+    - Increased gap between cores for better breathing room
+    - Core labels at 60% opacity instead of 40% for better readability
+    - Larger padding for better touch targets
+    - Better size progression across breakpoints
+    
     Grid columns are optimized for container width at each breakpoint:
     - Mobile (1 col main): 4 cores wide
     - Small (1 col main): 6 cores wide
     - Medium (2 col main): 4 cores wide (card is ~50% screen)
     - Large (2 col main): 5 cores wide (card is ~50% screen)
     - XL (3 col main): 5 cores wide (card is ~33% screen)
-    - 2XL (4 col main): 4-6 cores wide (card is ~25% screen)
+    - 2XL (3 col main): 6 cores wide (limited to 3 cols)
     """
     return Div(
         *[Div(
-            # Core number (small, subtle)
+            # Core number (small, more readable)
             Span(f"C{i}", cls=combine_classes(
                 font_size.xs,
-                text_dui.base_content.opacity(40),  # Very subtle
+                text_dui.base_content.opacity(60),  # More readable (was 40%)
                 font_weight.normal
             )),
             # Percentage value (prominent, colored)
@@ -109,14 +115,14 @@ def render_cpu_cores_grid(
                 flex_direction.col,
                 items.center,
                 justify.center,
-                p(1),                   # Smaller padding on mobile
-                p(2).sm,                # Normal padding on small+
+                p(2),                   # Increased padding (was 1)
+                p(3).sm,                # Increased padding on small+ (was 2)
                 bg_dui.base_200,
                 rounded.md,
-                min_w(10),              # Smaller minimum width on mobile
-                min_w(12).sm,           # Normal minimum width on small+
-                h(10),                  # Smaller height on mobile
-                h(12).sm                # Normal height on small+
+                min_w(12),              # Increased minimum width (was 10)
+                min_w(14).sm,           # Increased on small+ (was 12)
+                h(12),                  # Increased height (was 10)
+                h(14).sm                # Increased on small+ (was 12)
             )
         ) for i, percent in enumerate(cpu_percents)],
         cls=combine_classes(
@@ -124,183 +130,220 @@ def render_cpu_cores_grid(
             # Responsive grid columns - adjusted for container context
             grid_cols(4),       # Mobile (1 col main): 4 cores wide
             grid_cols(6).sm,    # Small (1 col main): 6 cores wide
-            grid_cols(4).md,    # Medium (2 col main): 4 cores per row (good for ~50% width)
-            grid_cols(5).lg,    # Large (2 col main): 5 cores per row (good for ~50% width)
-            grid_cols(5).xl,    # XL (3 col main): 5 cores per row (good for ~33% width)
-            grid_cols(6)._2xl,  # 2XL (4 col main): 6 cores per row (good for ~25% width)
-            gap(1),             # Small gap between items
+            grid_cols(4).md,    # Medium (2 col main): 4 cores per row
+            grid_cols(5).lg,    # Large (2 col main): 5 cores per row
+            grid_cols(5).xl,    # XL (3 col main): 5 cores per row
+            grid_cols(6)._2xl,  # 2XL (3 col main): 6 cores per row
+            gap(2),             # Increased gap (was 1)
+            gap(3).sm,          # Larger gap on small+
             w.full
         )
     )
 
-# %% ../../nbs/components/cards.ipynb 9
+# %% ../../nbs/components/cards.ipynb 10
 def render_os_info_card()-> FT:  # A Div element containing the OS information card
-    """Render the OS information card."""
+    """Render the OS information card with improved hierarchy."""
     info = get_static_system_info()
 
     return Div(
         Div(
-            H3("Operating System", cls=combine_classes(card_title, text_dui.base_content)),
-            cls=str(m.b(4))
+            H3("Operating System", cls=combine_classes(
+                card_title,
+                font_size.lg,
+                font_weight.bold,
+                text_dui.base_content
+            )),
+            cls=str(m.b(6))
         ),
         Div(
             render_stat_card("System", f"{info['os']} {info['os_release']}", info['architecture']),
             render_stat_card("Hostname", info['hostname'], f"Python {info['python_version']}"),
             render_stat_card("Boot Time", info['boot_time'], f"Uptime: {format_uptime(info['boot_time'])}"),
             render_stat_card("CPU Cores", f"{info['cpu_count']} Physical", f"{info['cpu_count_logical']} Logical"),
-            cls=combine_classes(stats, stats_direction.vertical, bg_dui.base_200, rounded.lg, p(4), overflow.x.auto, w.full)
+            cls=combine_classes(stats, stats_direction.vertical, bg_dui.base_200, rounded.lg, p(6), overflow.x.auto, w.full)  # Increased padding
         ),
-        cls=str(card_body)
+        cls=combine_classes(card_body, p(6))
     )
 
-# %% ../../nbs/components/cards.ipynb 11
+# %% ../../nbs/components/cards.ipynb 12
 def render_cpu_card(
     cpu_info:dict  # Dictionary containing CPU usage information
 )-> FT:  # A Div element containing the CPU usage card
-    """Render the CPU usage card."""
+    """Render the CPU usage card with improved hierarchy and spacing.
+    
+    Design improvements:
+    - Larger card title (lg font, bold)
+    - XL badge for percentage to make it hero element
+    - Increased card body padding
+    - Better section spacing (m.b(6) instead of m.b(4))
+    - Section headers more prominent
+    """
     return Div(
         Div(
-            H3("CPU Usage", cls=combine_classes(card_title, text_dui.base_content)),
+            H3("CPU Usage", cls=combine_classes(
+                card_title, 
+                font_size.lg,  # Larger title
+                font_weight.bold,  # Bolder
+                text_dui.base_content
+            )),
             Span(
                 f"{cpu_info['percent']:.1f}%",
                 cls=combine_classes(
                     badge,
                     badge_colors.primary if cpu_info['percent'] < 80 else badge_colors.error,
-                    badge_sizes.lg
+                    badge_sizes.xl  # Larger badge (was lg)
                 )
             ),
-            cls=combine_classes(flex_display, justify.between, items.center, m.b(4))
+            cls=combine_classes(flex_display, justify.between, items.center, m.b(6))  # Increased margin
         ),
 
         # Overall CPU usage
         Div(
             render_progress_bar(cpu_info['percent'], label="Overall Usage"),
-            cls=str(m.b(4))
+            cls=str(m.b(6))  # Increased margin (was m.b(4))
         ),
 
         # CPU Frequency
         Div(
-            P("CPU Frequency", cls=combine_classes(font_size.sm, font_weight.medium, m.b(2))),
+            P("CPU Frequency", cls=combine_classes(
+                font_size.sm, 
+                font_weight.semibold,  # More prominent (was medium)
+                m.b(3)  # Increased margin (was m.b(2))
+            )),
             Div(
                 Span(f"Current: {cpu_info['frequency_current']:.0f} MHz",
-                     cls=combine_classes(text_dui.primary, font_size.sm)),
+                     cls=combine_classes(text_dui.primary, font_size.sm, font_weight.medium)),
                 Span(f"Min: {cpu_info['frequency_min']:.0f} MHz",
-                     cls=combine_classes(text_dui.base_content, font_size.xs)),
+                     cls=combine_classes(text_dui.base_content.opacity(70), font_size.xs)),
                 Span(f"Max: {cpu_info['frequency_max']:.0f} MHz",
-                     cls=combine_classes(text_dui.base_content, font_size.xs)),
+                     cls=combine_classes(text_dui.base_content.opacity(70), font_size.xs)),
                 cls=combine_classes(flex_display, justify.between, gap(2))
             ),
-            cls=str(m.b(4))
+            cls=str(m.b(6))  # Increased margin (was m.b(4))
         ),
 
-        # Per-core usage - now handles any number of cores efficiently
+        # Per-core usage
         Div(
-            P("Per Core Usage", cls=combine_classes(font_size.sm, font_weight.medium, m.b(2))),
+            P("Per Core Usage", cls=combine_classes(
+                font_size.sm, 
+                font_weight.semibold,  # More prominent (was medium)
+                m.b(3)  # Increased margin (was m.b(2))
+            )),
             render_cpu_cores_grid(cpu_info['percent_per_core']),
-            cls=str(m.t(4))
+            cls=str(m.t(6))  # Increased margin (was m.t(4))
         ) if cpu_info['percent_per_core'] else None,
 
-        cls=str(card_body),
+        cls=combine_classes(card_body, p(6)),  # Increased padding
         id=HtmlIds.CPU_CARD_BODY
     )
 
-# %% ../../nbs/components/cards.ipynb 13
+# %% ../../nbs/components/cards.ipynb 14
 def render_memory_card(
     mem_info:dict  # Dictionary containing memory usage information
 )-> FT:  # A Div element containing the memory usage card
-    """Render the memory usage card."""
+    """Render the memory usage card with improved hierarchy and spacing."""
     return Div(
         Div(
-            H3("Memory Usage", cls=combine_classes(card_title, text_dui.base_content)),
+            H3("Memory Usage", cls=combine_classes(
+                card_title,
+                font_size.lg,
+                font_weight.bold,
+                text_dui.base_content
+            )),
             Span(
                 f"{mem_info['percent']:.1f}%",
                 cls=combine_classes(
                     badge,
                     badge_colors.primary if mem_info['percent'] < 80 else badge_colors.error,
-                    badge_sizes.lg
+                    badge_sizes.xl
                 )
             ),
-            cls=combine_classes(flex_display, justify.between, items.center, m.b(4))
+            cls=combine_classes(flex_display, justify.between, items.center, m.b(6))
         ),
 
         # RAM Usage
         Div(
-            P("RAM", cls=combine_classes(font_size.sm, font_weight.medium, m.b(2))),
+            P("RAM", cls=combine_classes(font_size.sm, font_weight.semibold, m.b(3))),
             render_progress_bar(mem_info['percent'],
                               label=f"{format_bytes(mem_info['used'])} / {format_bytes(mem_info['total'])}"),
             P(f"Available: {format_bytes(mem_info['available'])}",
-              cls=combine_classes(font_size.xs, text_dui.base_content, m.t(1))),
-            cls=str(m.b(4))
+              cls=combine_classes(font_size.xs, text_dui.base_content.opacity(70), m.t(2))),
+            cls=str(m.b(6))
         ),
 
         # Swap Usage
         Div(
-            P("Swap", cls=combine_classes(font_size.sm, font_weight.medium, m.b(2))),
+            P("Swap", cls=combine_classes(font_size.sm, font_weight.semibold, m.b(3))),
             render_progress_bar(mem_info['swap_percent'],
                               label=f"{format_bytes(mem_info['swap_used'])} / {format_bytes(mem_info['swap_total'])}"),
-            cls=str(m.t(4))
+            cls=str(m.t(6))
         ) if mem_info['swap_total'] > 0 else None,
 
-        cls=str(card_body),
+        cls=combine_classes(card_body, p(6)),
         id=HtmlIds.MEMORY_CARD_BODY
     )
 
-# %% ../../nbs/components/cards.ipynb 15
+# %% ../../nbs/components/cards.ipynb 16
 def render_disk_entries(
     disk_info:list  # List of dictionaries containing disk information
 )-> FT:  # A Div element containing disk entries
-    """Render just the disk entries section."""
+    """Render disk entries with improved spacing."""
     return Div(
         *[Div(
             Div(
-                P(disk['device'], cls=combine_classes(font_size.sm, font_weight.medium)),
+                P(disk['device'], cls=combine_classes(font_size.sm, font_weight.semibold)),
                 P(f"{disk['mountpoint']} ({disk['fstype']})",
-                  cls=combine_classes(font_size.xs, text_dui.base_content)),
-                cls=str(m.b(2))
+                  cls=combine_classes(font_size.xs, text_dui.base_content.opacity(70))),
+                cls=str(m.b(3))  # Increased margin (was 2)
             ),
             render_progress_bar(disk['percent'],
                               label=f"{format_bytes(disk['used'])} / {format_bytes(disk['total'])}"),
             P(f"Free: {format_bytes(disk['free'])}",
-              cls=combine_classes(font_size.xs, text_dui.base_content, m.t(1))),
-            cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
+              cls=combine_classes(font_size.xs, text_dui.base_content.opacity(70), m.t(2))),
+            cls=combine_classes(p(4), bg_dui.base_200, rounded.lg, m.b(4))  # Increased padding and margin
         ) for disk in disk_info[:5]],
         cls="",
         id=HtmlIds.DISK_ENTRIES
     )
 
-# %% ../../nbs/components/cards.ipynb 16
+# %% ../../nbs/components/cards.ipynb 17
 def render_disk_card(
     disk_info:list  # List of dictionaries containing disk usage information
 )-> FT:  # A Div element containing the disk usage card
-    """Render the disk usage card using helper functions."""
+    """Render the disk usage card with improved hierarchy."""
     return Div(
         Div(
-            H3("Disk Usage", cls=combine_classes(card_title, text_dui.base_content)),
-            cls=str(m.b(4))
+            H3("Disk Usage", cls=combine_classes(
+                card_title,
+                font_size.lg,
+                font_weight.bold,
+                text_dui.base_content
+            )),
+            cls=str(m.b(6))
         ),
 
         # Disk entries - render using helper
         render_disk_entries(disk_info),
 
-        cls=str(card_body),
+        cls=combine_classes(card_body, p(6)),
         id=HtmlIds.DISK_CARD_BODY
     )
 
-# %% ../../nbs/components/cards.ipynb 18
+# %% ../../nbs/components/cards.ipynb 19
 def render_network_interfaces(
     net_info:dict  # Dictionary containing network information
 )-> FT:  # A Div element containing network interfaces
-    """Render just the network interfaces section."""
+    """Render network interfaces with improved progress bar height and spacing."""
     interfaces = net_info['interfaces']
 
     return Div(
         *[Div(
             # Interface header
             Div(
-                P(interface['name'], cls=combine_classes(font_size.sm, font_weight.medium)),
+                P(interface['name'], cls=combine_classes(font_size.sm, font_weight.semibold)),
                 P(', '.join(interface['ip_addresses']) if interface['ip_addresses'] else 'No IP',
-                  cls=combine_classes(font_size.xs, text_dui.base_content)),
-                cls=str(m.b(2))
+                  cls=combine_classes(font_size.xs, text_dui.base_content.opacity(70))),
+                cls=str(m.b(3))  # Increased margin (was 2)
             ),
 
             # Bandwidth meters
@@ -316,9 +359,9 @@ def render_network_interfaces(
                     Progress(
                         value=str(min(100, interface['bytes_sent_per_sec'] / 1024 / 1024 * 10)),
                         max="100",
-                        cls=combine_classes(progress, progress_colors.info, w.full, h(1))
+                        cls=combine_classes(progress, progress_colors.info, w.full, h(2))  # Taller progress (was h(1))
                     ),
-                    cls=str(m.b(2))
+                    cls=str(m.b(3))  # Increased margin (was 2)
                 ),
 
                 # Download speed
@@ -332,26 +375,26 @@ def render_network_interfaces(
                     Progress(
                         value=str(min(100, interface['bytes_recv_per_sec'] / 1024 / 1024 * 10)),
                         max="100",
-                        cls=combine_classes(progress, progress_colors.success, w.full, h(1))
+                        cls=combine_classes(progress, progress_colors.success, w.full, h(2))  # Taller progress (was h(1))
                     ),
-                    cls=str(m.b(2))
+                    cls=str(m.b(3))  # Increased margin (was 2)
                 ),
 
                 # Statistics
                 Label(
                     Span(f"Total: ↑{format_bytes(interface['bytes_sent'])} ↓{format_bytes(interface['bytes_recv'])}",
-                         cls=combine_classes(font_size.xs, text_dui.base_content)),
-                    cls=str(m.t(1))
+                         cls=combine_classes(font_size.xs, text_dui.base_content.opacity(70))),
+                    cls=str(m.t(2))
                 ),
             ),
 
-            cls=combine_classes(p(3), bg_dui.base_200, rounded.lg, m.b(3))
+            cls=combine_classes(p(4), bg_dui.base_200, rounded.lg, m.b(4))  # Increased padding and margin
         ) for interface in interfaces[:3]],
         cls="",
         id=HtmlIds.NETWORK_INTERFACES
     )
 
-# %% ../../nbs/components/cards.ipynb 19
+# %% ../../nbs/components/cards.ipynb 20
 def render_network_connections(
     net_info:dict  # Dictionary containing network information
 )-> FT:  # A Div element containing connection statistics
@@ -371,34 +414,44 @@ def render_network_connections(
         id=HtmlIds.NETWORK_CONNECTIONS
     )
 
-# %% ../../nbs/components/cards.ipynb 20
+# %% ../../nbs/components/cards.ipynb 21
 def render_network_card(
     net_info:dict  # Dictionary containing network interface and connection information
 )-> FT:  # A Div element containing the network monitoring card
-    """Render the network monitoring card using helper functions."""
+    """Render the network monitoring card with improved hierarchy."""
     interfaces = net_info['interfaces']
 
     if not interfaces:
         return Div(
             Div(
-                H3("Network", cls=combine_classes(card_title, text_dui.base_content)),
-                cls=str(m.b(4))
+                H3("Network", cls=combine_classes(
+                    card_title,
+                    font_size.lg,
+                    font_weight.bold,
+                    text_dui.base_content
+                )),
+                cls=str(m.b(6))
             ),
             Div(
                 "No active network interfaces detected",
                 cls=combine_classes(alert, alert_colors.info)
             ),
-            cls=str(card_body)
+            cls=combine_classes(card_body, p(6))
         )
 
     return Div(
         Div(
-            H3("Network", cls=combine_classes(card_title, text_dui.base_content)),
+            H3("Network", cls=combine_classes(
+                card_title,
+                font_size.lg,
+                font_weight.bold,
+                text_dui.base_content
+            )),
             Span(
                 f"{len(interfaces)} Active",
-                cls=combine_classes(badge, badge_colors.info, badge_sizes.lg)
+                cls=combine_classes(badge, badge_colors.info, badge_sizes.xl)
             ),
-            cls=combine_classes(flex_display, justify.between, items.center, m.b(4))
+            cls=combine_classes(flex_display, justify.between, items.center, m.b(6))
         ),
 
         # Network interfaces - render using helper
@@ -407,11 +460,11 @@ def render_network_card(
         # Connection statistics - render using helper
         render_network_connections(net_info),
 
-        cls=str(card_body),
+        cls=combine_classes(card_body, p(6)),
         id=HtmlIds.NETWORK_CARD_BODY
     )
 
-# %% ../../nbs/components/cards.ipynb 22
+# %% ../../nbs/components/cards.ipynb 23
 def render_process_card(
     proc_info:dict  # Dictionary containing process information and statistics
 )-> FT:  # A Div element containing the process monitoring card
@@ -465,7 +518,7 @@ def render_process_card(
         id=HtmlIds.PROCESS_CARD_BODY
     )
 
-# %% ../../nbs/components/cards.ipynb 24
+# %% ../../nbs/components/cards.ipynb 25
 def render_gpu_metrics(
     gpu_info:dict  # Dictionary containing GPU information
 )-> FT:  # A Div element containing GPU metrics section
@@ -569,7 +622,7 @@ def render_gpu_metrics(
         id=HtmlIds.GPU_METRICS
     )
 
-# %% ../../nbs/components/cards.ipynb 25
+# %% ../../nbs/components/cards.ipynb 26
 # The scroll preservation script
 scroll_preserve_script = Script(f"""
 document.body.addEventListener('htmx:beforeSwap', function(evt) {{
@@ -589,7 +642,7 @@ document.body.addEventListener('htmx:afterSwap', function(evt) {{
 }});
 """)
 
-# %% ../../nbs/components/cards.ipynb 26
+# %% ../../nbs/components/cards.ipynb 27
 def render_gpu_processes_section(
     gpu_info:dict  # Dictionary containing GPU information
 )-> FT:  # A Div element containing GPU processes section
@@ -608,7 +661,7 @@ def render_gpu_processes_section(
         id=HtmlIds.GPU_PROCESSES_SECTION
     )
 
-# %% ../../nbs/components/cards.ipynb 27
+# %% ../../nbs/components/cards.ipynb 28
 def render_gpu_card(
     gpu_info:dict  # Dictionary containing GPU information and statistics
 )-> FT:  # A Div element containing the GPU information card
@@ -646,7 +699,7 @@ def render_gpu_card(
         id=HtmlIds.GPU_CARD_BODY
     )
 
-# %% ../../nbs/components/cards.ipynb 29
+# %% ../../nbs/components/cards.ipynb 30
 def render_temperature_sensors(
     temp_info:list  # List of dictionaries containing temperature information
 )-> FT:  # A Div element containing temperature sensors
@@ -696,7 +749,7 @@ def render_temperature_sensors(
         id=HtmlIds.TEMPERATURE_SENSORS
     )
 
-# %% ../../nbs/components/cards.ipynb 30
+# %% ../../nbs/components/cards.ipynb 31
 def render_temperature_card(
     temp_info:list  # List of dictionaries containing temperature sensor information
 )-> FT:  # A Div element containing the temperature sensors card
