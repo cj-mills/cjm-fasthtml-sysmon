@@ -79,22 +79,7 @@ def get_cpu_text_color(
 def render_cpu_cores_grid(
     cpu_percents:list  # List of CPU usage percentages for each core
 )-> FT:  # A Div element containing a responsive grid of CPU core usage
-    """Render CPU cores as a responsive grid with improved readability.
-
-    Design improvements:
-    - Increased gap between cores for better breathing room
-    - Core labels at 60% opacity instead of 40% for better readability
-    - Larger padding for better touch targets
-    - Better size progression across breakpoints
-    
-    Grid columns are optimized for container width at each breakpoint:
-    - Mobile (1 col main): 4 cores wide
-    - Small (1 col main): 6 cores wide
-    - Medium (2 col main): 4 cores wide (card is ~50% screen)
-    - Large (2 col main): 5 cores wide (card is ~50% screen)
-    - XL (3 col main): 5 cores wide (card is ~33% screen)
-    - 2XL (3 col main): 6 cores wide (limited to 3 cols)
-    """
+    """Render CPU cores as a responsive grid with color-coded percentages."""
     return Div(
         *[Div(
             # Core number (small, more readable)
@@ -142,7 +127,7 @@ def render_cpu_cores_grid(
 
 # %% ../../nbs/components/cards.ipynb 10
 def render_os_info_card()-> FT:  # A Div element containing the OS information card
-    """Render the OS information card with improved hierarchy."""
+    """Render the OS information card."""
     info = get_static_system_info()
 
     return Div(
@@ -169,15 +154,7 @@ def render_os_info_card()-> FT:  # A Div element containing the OS information c
 def render_cpu_card(
     cpu_info:dict  # Dictionary containing CPU usage information
 )-> FT:  # A Div element containing the CPU usage card
-    """Render the CPU usage card with improved hierarchy and spacing.
-    
-    Design improvements:
-    - Larger card title (lg font, bold)
-    - XL badge for percentage to make it hero element
-    - Increased card body padding
-    - Better section spacing (m.b(6) instead of m.b(4))
-    - Section headers more prominent
-    """
+    """Render the CPU usage card."""
     return Div(
         Div(
             H3("CPU Usage", cls=combine_classes(
@@ -241,7 +218,7 @@ def render_cpu_card(
 def render_memory_card(
     mem_info:dict  # Dictionary containing memory usage information
 )-> FT:  # A Div element containing the memory usage card
-    """Render the memory usage card with improved hierarchy and spacing."""
+    """Render the memory usage card."""
     return Div(
         Div(
             H3("Memory Usage", cls=combine_classes(
@@ -287,7 +264,7 @@ def render_memory_card(
 def render_disk_entries(
     disk_info:list  # List of dictionaries containing disk information
 )-> FT:  # A Div element containing disk entries
-    """Render disk entries with improved spacing."""
+    """Render just the disk entries section."""
     return Div(
         *[Div(
             Div(
@@ -310,7 +287,7 @@ def render_disk_entries(
 def render_disk_card(
     disk_info:list  # List of dictionaries containing disk usage information
 )-> FT:  # A Div element containing the disk usage card
-    """Render the disk usage card with improved hierarchy."""
+    """Render the disk usage card using helper functions."""
     return Div(
         Div(
             H3("Disk Usage", cls=combine_classes(
@@ -333,7 +310,7 @@ def render_disk_card(
 def render_network_interfaces(
     net_info:dict  # Dictionary containing network information
 )-> FT:  # A Div element containing network interfaces
-    """Render network interfaces with improved progress bar height and spacing."""
+    """Render just the network interfaces section."""
     interfaces = net_info['interfaces']
 
     return Div(
@@ -418,7 +395,7 @@ def render_network_connections(
 def render_network_card(
     net_info:dict  # Dictionary containing network interface and connection information
 )-> FT:  # A Div element containing the network monitoring card
-    """Render the network monitoring card with improved hierarchy."""
+    """Render the network monitoring card using helper functions."""
     interfaces = net_info['interfaces']
 
     if not interfaces:

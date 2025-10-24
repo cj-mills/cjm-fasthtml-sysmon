@@ -29,14 +29,7 @@ def render_stat_card(
     desc_text:str=None,  # Optional description text below the value
     value_color:str=None  # Optional color class for the value text
 )-> FT:  # A Div element containing the stat card with consistent styling
-    """Render a stat card with enhanced value prominence and improved hierarchy.
-    
-    Design improvements:
-    - Value is hero element (2xl font, bold weight)
-    - Title more subtle (xs font with reduced opacity)
-    - Description even more subtle (xs font with further reduced opacity)
-    - Better visual hierarchy through size and weight contrast
-    """
+    """Render a stat card with consistent styling."""
     from cjm_fasthtml_tailwind.utilities.typography import font_weight
     
     value_classes = [stat_value, font_size._2xl, font_weight.bold]
@@ -66,14 +59,7 @@ def render_progress_bar(
     max_value:float=100,  # The maximum value for the progress bar (default: 100)
     label:str=None  # Optional label text to display above the progress bar
 )-> FT:  # A Div element containing the progress bar with optional label
-    """Render a progress bar with improved label hierarchy and visibility.
-    
-    Design improvements:
-    - Label is more prominent (sm font, medium weight)
-    - Percentage value is subtle (xs font, reduced opacity)
-    - Progress bar has better height (h-2 instead of default thin bar)
-    - Better vertical spacing
-    """
+    """Render a progress bar with label."""
     from cjm_fasthtml_tailwind.utilities.typography import font_weight
     from cjm_fasthtml_tailwind.utilities.sizing import h
     

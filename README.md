@@ -53,29 +53,30 @@ graph LR
     monitors_sensors[monitors.sensors<br/>sensors]
     monitors_system[monitors.system<br/>system]
 
-    components_base --> monitors_processes
     components_base --> core_html_ids
+    components_base --> monitors_processes
     components_cards --> core_utils
-    components_cards --> core_html_ids
-    components_cards --> components_base
     components_cards --> monitors_network
-    components_cards --> components_common
     components_cards --> components_tables
-    components_cards --> monitors_sensors
-    components_cards --> monitors_processes
-    components_cards --> monitors_system
-    components_cards --> monitors_disk
-    components_cards --> monitors_memory
-    components_cards --> monitors_gpu
     components_cards --> monitors_cpu
+    components_cards --> components_base
+    components_cards --> components_common
+    components_cards --> monitors_disk
+    components_cards --> monitors_processes
+    components_cards --> monitors_sensors
+    components_cards --> monitors_system
+    components_cards --> monitors_memory
+    components_cards --> core_html_ids
+    components_cards --> monitors_gpu
     components_common --> core_utils
+    components_common --> monitors_system
     components_modals --> core_html_ids
-    components_tables --> core_html_ids
     components_tables --> monitors_processes
+    components_tables --> core_html_ids
     components_tables --> monitors_gpu
 ```
 
-*20 cross-module dependencies detected*
+*21 cross-module dependencies detected*
 
 ## CLI Reference
 
@@ -156,17 +157,7 @@ def get_cpu_text_color(
 def render_cpu_cores_grid(
     cpu_percents:list  # List of CPU usage percentages for each core
 )-> FT:  # A Div element containing a responsive grid of CPU core usage
-    """
-    Render CPU cores as a responsive grid with color-coded percentages.
-    
-    Grid columns are optimized for container width at each breakpoint:
-    - Mobile (1 col main): 4 cores wide
-    - Small (1 col main): 6 cores wide
-    - Medium (2 col main): 4 cores wide (card is ~50% screen)
-    - Large (2 col main): 5 cores wide (card is ~50% screen)
-    - XL (3 col main): 5 cores wide (card is ~33% screen)
-    - 2XL (4 col main): 4-6 cores wide (card is ~25% screen)
-    """
+    "Render CPU cores as a responsive grid with color-coded percentages."
 ```
 
 ``` python
